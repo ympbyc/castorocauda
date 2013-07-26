@@ -42,10 +42,17 @@
                                  (reset! mouse-down-state
                                          (when (get-attribute element-old :active)
                                            new-state))
-                                 new-state)                                       
+                                 new-state)
                                (let [mds @mouse-down-state
                                      diff (fun mds element-old element-new points)]
                                  (when-not (get-attribute element-old :active)
                                    (reset! mouse-down-state nil))
                                  (patch mds diff)))))))
 
+
+
+(defn patch-state
+  "Should be used with care."
+  [f]
+  (swap! cur-state
+         (fn [st] (patch st (f st)))))
