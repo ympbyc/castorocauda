@@ -21683,45 +21683,99 @@ cljs.core.special_symbol_QMARK_ = function special_symbol_QMARK_(x) {
   new cljs.core.Symbol(null, ".", ".", -1640531481, null), new cljs.core.Symbol(null, "ns", "ns", -1640528002, null), new cljs.core.Symbol(null, "do", "do", -1640528316, null), new cljs.core.Symbol(null, "fn*", "fn*", -1640430053, null), new cljs.core.Symbol(null, "throw", "throw", -1530191713, null), new cljs.core.Symbol(null, "letfn*", "letfn*", 1548249632, null), new cljs.core.Symbol(null, "js*", "js*", -1640426054, null), new cljs.core.Symbol(null, "defrecord*", "defrecord*", 774272013, null), 
   new cljs.core.Symbol(null, "let*", "let*", -1637213400, null), new cljs.core.Symbol(null, "loop*", "loop*", -1537374273, null), new cljs.core.Symbol(null, "if", "if", -1640528170, null), new cljs.core.Symbol(null, "def", "def", -1640432194, null)]), x)
 };
-goog.provide("castorocauda.monads");
+goog.provide("castorocauda.stream");
 goog.require("cljs.core");
-castorocauda.monads.state_m = cljs.core.PersistentArrayMap.fromArray(["\ufdd0:m-result", function state_m(v) {
-  return function(st) {
-    return cljs.core.PersistentVector.fromArray([v, st], true)
-  }
-}, "\ufdd0:m-bind", function state_m(mv, f) {
-  return function(st) {
-    var vec__23977 = mv.call(null, st);
-    var v = cljs.core.nth.call(null, vec__23977, 0, null);
-    var new_st = cljs.core.nth.call(null, vec__23977, 1, null);
-    return f.call(null, v).call(null, new_st)
-  }
-}], true);
-castorocauda.monads.patch_state = function patch_state(f) {
-  return function(st) {
-    return cljs.core.PersistentVector.fromArray([st, f.call(null, st)], true)
-  }
+castorocauda.stream.mk_fstream = function() {
+  var mk_fstream__delegate = function(xs) {
+    return cljs.core.atom.call(null, cljs.core.seq.call(null, xs))
+  };
+  var mk_fstream = function(var_args) {
+    var xs = null;
+    if(arguments.length > 0) {
+      xs = cljs.core.array_seq(Array.prototype.slice.call(arguments, 0), 0)
+    }
+    return mk_fstream__delegate.call(this, xs)
+  };
+  mk_fstream.cljs$lang$maxFixedArity = 0;
+  mk_fstream.cljs$lang$applyTo = function(arglist__50669) {
+    var xs = cljs.core.seq(arglist__50669);
+    return mk_fstream__delegate(xs)
+  };
+  mk_fstream.cljs$core$IFn$_invoke$arity$variadic = mk_fstream__delegate;
+  return mk_fstream
+}();
+castorocauda.stream.cons_fstream = function cons_fstream(x, stream) {
+  return cljs.core.swap_BANG_.call(null, stream, function(xs) {
+    return cljs.core.cons.call(null, x, xs)
+  })
 };
-castorocauda.monads.fetch_state = function fetch_state() {
-  return function(state) {
-    return cljs.core.PersistentVector.fromArray([state, state], true)
-  }
+castorocauda.stream.sync_fstream_ = function sync_fstream_(f, src_s, dst_s, pred) {
+  return cljs.core.add_watch.call(null, src_s, cljs.core.gensym.call(null), function(k, r, os, p__50672) {
+    var vec__50673 = p__50672;
+    var x = cljs.core.nth.call(null, vec__50673, 0, null);
+    var _ = cljs.core.nthnext.call(null, vec__50673, 1);
+    var ns = vec__50673;
+    if(cljs.core.truth_(pred.call(null, x))) {
+      return castorocauda.stream.cons_fstream.call(null, f.call(null, x), dst_s)
+    }else {
+      return null
+    }
+  })
 };
-castorocauda.monads.set_state = function set_state(new_state) {
-  return function(old_state) {
-    return cljs.core.PersistentVector.fromArray([old_state, new_state], true)
-  }
+castorocauda.stream.sync_fstream = function() {
+  var sync_fstream = null;
+  var sync_fstream__3 = function(f, src_s, dst_s) {
+    return castorocauda.stream.sync_fstream_.call(null, f, src_s, dst_s, function(_) {
+      return true
+    })
+  };
+  var sync_fstream__4 = function(f, src_s, dst_s, pred) {
+    return castorocauda.stream.sync_fstream_.call(null, f, src_s, dst_s, pred)
+  };
+  sync_fstream = function(f, src_s, dst_s, pred) {
+    switch(arguments.length) {
+      case 3:
+        return sync_fstream__3.call(this, f, src_s, dst_s);
+      case 4:
+        return sync_fstream__4.call(this, f, src_s, dst_s, pred)
+    }
+    throw new Error("Invalid arity: " + arguments.length);
+  };
+  sync_fstream.cljs$core$IFn$_invoke$arity$3 = sync_fstream__3;
+  sync_fstream.cljs$core$IFn$_invoke$arity$4 = sync_fstream__4;
+  return sync_fstream
+}();
+castorocauda.stream.map_fstream = function map_fstream(f, src_s) {
+  var dst_s = cljs.core.atom.call(null, cljs.core.map.call(null, f, cljs.core.deref.call(null, src_s)));
+  castorocauda.stream.sync_fstream.call(null, function(new_head) {
+    return f.call(null, new_head)
+  }, src_s, dst_s);
+  return dst_s
 };
-castorocauda.monads.maybe_m = cljs.core.PersistentArrayMap.fromArray(["\ufdd0:m-result", cljs.core.identity, "\ufdd0:m-bind", function maybe_m(mv, f) {
-  if(mv == null) {
-    return null
-  }else {
-    return f.call(null, mv)
-  }
-}], true);
-castorocauda.monads.seq_m = cljs.core.PersistentArrayMap.fromArray(["\ufdd0:m-result", cljs.core.list, "\ufdd0:m-bind", function seq_m(mv, f) {
-  return cljs.core.flatten.call(null, cljs.core.map.call(null, f, mv))
-}], true);
+castorocauda.stream.merge_fstream = function merge_fstream(f, s1, s2) {
+  var dst_s = cljs.core.atom.call(null, cljs.core.map.call(null, f, cljs.core.deref.call(null, s1), cljs.core.deref.call(null, s2)));
+  castorocauda.stream.sync_fstream.call(null, function(new_head) {
+    return f.call(null, new_head, cljs.core.first.call(null, cljs.core.deref.call(null, s2)))
+  }, s1, dst_s);
+  castorocauda.stream.sync_fstream.call(null, function(new_head) {
+    return f.call(null, cljs.core.first.call(null, cljs.core.deref.call(null, s1)), new_head)
+  }, s2, dst_s);
+  return dst_s
+};
+castorocauda.stream.filter_fstream = function filter_fstream(f, src_s) {
+  var dst_s = cljs.core.atom.call(null, cljs.core.filter.call(null, f, cljs.core.deref.call(null, src_s)));
+  castorocauda.stream.sync_fstream.call(null, cljs.core.identity, src_s, dst_s, function(x) {
+    return f.call(null, x)
+  });
+  return dst_s
+};
+castorocauda.stream.dom_events = function dom_events(el, ev) {
+  var strm = castorocauda.stream.mk_fstream.call(null);
+  el.addEventListener(ev, function(e) {
+    return castorocauda.stream.cons_fstream.call(null, e, strm)
+  });
+  return strm
+};
 goog.provide("clojure.string");
 goog.require("cljs.core");
 goog.require("goog.string.StringBuffer");
@@ -22131,27 +22185,20 @@ castorocauda.html.html_delta = function html_delta(old_dom, new_dom, path, n) {
     }
   }
 };
-goog.provide("castorocauda.core");
+goog.provide("castorocauda.dom");
 goog.require("cljs.core");
-goog.require("castorocauda.monads");
 goog.require("castorocauda.html");
-goog.require("castorocauda.monads");
 goog.require("hiccups.runtime");
 goog.require("castorocauda.html");
-castorocauda.core.dom_edn = cljs.core.atom.call(null, cljs.core.PersistentVector.EMPTY);
-castorocauda.core.logg = function logg(x) {
-  var dom = document.getElementById("castorocauda-console");
-  var txt = dom.textContent;
-  return dom.textContent = [cljs.core.str(txt), cljs.core.str(cljs.core.prn_str.call(null, x))].join("")
-};
-castorocauda.core.select_path_dom_ = function select_path_dom_(start_el, p__20285) {
-  var vec__20288 = p__20285;
-  var map__20289 = cljs.core.nth.call(null, vec__20288, 0, null);
-  var map__20289__$1 = cljs.core.seq_QMARK_.call(null, map__20289) ? cljs.core.apply.call(null, cljs.core.hash_map, map__20289) : map__20289;
-  var index = cljs.core.get.call(null, map__20289__$1, "\ufdd0:index");
-  var tag = cljs.core.get.call(null, map__20289__$1, "\ufdd0:tag");
-  var rest_path = cljs.core.nthnext.call(null, vec__20288, 1);
-  var path = vec__20288;
+castorocauda.dom.dom_edn = cljs.core.atom.call(null, cljs.core.PersistentVector.EMPTY);
+castorocauda.dom.select_path_dom = function select_path_dom(start_el, p__50632) {
+  var vec__50635 = p__50632;
+  var map__50636 = cljs.core.nth.call(null, vec__50635, 0, null);
+  var map__50636__$1 = cljs.core.seq_QMARK_.call(null, map__50636) ? cljs.core.apply.call(null, cljs.core.hash_map, map__50636) : map__50636;
+  var index = cljs.core.get.call(null, map__50636__$1, "\ufdd0:index");
+  var tag = cljs.core.get.call(null, map__50636__$1, "\ufdd0:tag");
+  var rest_path = cljs.core.nthnext.call(null, vec__50635, 1);
+  var path = vec__50635;
   if(cljs.core.empty_QMARK_.call(null, path)) {
     return start_el
   }else {
@@ -22160,35 +22207,32 @@ castorocauda.core.select_path_dom_ = function select_path_dom_(start_el, p__2028
       console.log("fmm...");
       return start_el
     }else {
-      return select_path_dom_.call(null, children[index], rest_path)
+      return select_path_dom.call(null, children[index], rest_path)
     }
   }
 };
-castorocauda.core.select_path_dom = function select_path_dom(path) {
-  return castorocauda.core.select_path_dom_.call(null, castorocauda.core.toplevel_el.call(null), path)
-};
-castorocauda.core.propagate_dom_change = function propagate_dom_change(deltas) {
-  var seq__20298 = cljs.core.seq.call(null, deltas);
-  var chunk__20299 = null;
-  var count__20300 = 0;
-  var i__20301 = 0;
+castorocauda.dom.propagate_dom_change = function propagate_dom_change(deltas, base_el) {
+  var seq__50645 = cljs.core.seq.call(null, deltas);
+  var chunk__50646 = null;
+  var count__50647 = 0;
+  var i__50648 = 0;
   while(true) {
-    if(i__20301 < count__20300) {
-      var vec__20302 = cljs.core._nth.call(null, chunk__20299, i__20301);
-      var typ = cljs.core.nth.call(null, vec__20302, 0, null);
-      var path = cljs.core.nth.call(null, vec__20302, 1, null);
-      var a = cljs.core.nth.call(null, vec__20302, 2, null);
-      var b = cljs.core.nth.call(null, vec__20302, 3, null);
-      var node_20306 = castorocauda.core.select_path_dom.call(null, path);
-      var G__20303_20307 = typ;
-      if(cljs.core._EQ_.call(null, "\ufdd0:rem-att", G__20303_20307)) {
-        node_20306.removeAttribute(cljs.core.name.call(null, a))
+    if(i__50648 < count__50647) {
+      var vec__50649 = cljs.core._nth.call(null, chunk__50646, i__50648);
+      var typ = cljs.core.nth.call(null, vec__50649, 0, null);
+      var path = cljs.core.nth.call(null, vec__50649, 1, null);
+      var a = cljs.core.nth.call(null, vec__50649, 2, null);
+      var b = cljs.core.nth.call(null, vec__50649, 3, null);
+      var node_50653 = castorocauda.dom.select_path_dom.call(null, base_el, path);
+      var G__50650_50654 = typ;
+      if(cljs.core._EQ_.call(null, "\ufdd0:rem-att", G__50650_50654)) {
+        node_50653.removeAttribute(cljs.core.name.call(null, a))
       }else {
-        if(cljs.core._EQ_.call(null, "\ufdd0:att", G__20303_20307)) {
-          node_20306.setAttribute(cljs.core.name.call(null, a), [cljs.core.str(b)].join(""))
+        if(cljs.core._EQ_.call(null, "\ufdd0:att", G__50650_50654)) {
+          node_50653.setAttribute(cljs.core.name.call(null, a), [cljs.core.str(b)].join(""))
         }else {
-          if(cljs.core._EQ_.call(null, "\ufdd0:html", G__20303_20307)) {
-            node_20306.innerHTML = [cljs.core.str(hiccups.runtime.render_html.call(null, a))].join("")
+          if(cljs.core._EQ_.call(null, "\ufdd0:html", G__50650_50654)) {
+            node_50653.innerHTML = [cljs.core.str(hiccups.runtime.render_html.call(null, a))].join("")
           }else {
             if("\ufdd0:else") {
               throw new Error([cljs.core.str("No matching clause: "), cljs.core.str(typ)].join(""));
@@ -22197,46 +22241,46 @@ castorocauda.core.propagate_dom_change = function propagate_dom_change(deltas) {
           }
         }
       }
-      var G__20308 = seq__20298;
-      var G__20309 = chunk__20299;
-      var G__20310 = count__20300;
-      var G__20311 = i__20301 + 1;
-      seq__20298 = G__20308;
-      chunk__20299 = G__20309;
-      count__20300 = G__20310;
-      i__20301 = G__20311;
+      var G__50655 = seq__50645;
+      var G__50656 = chunk__50646;
+      var G__50657 = count__50647;
+      var G__50658 = i__50648 + 1;
+      seq__50645 = G__50655;
+      chunk__50646 = G__50656;
+      count__50647 = G__50657;
+      i__50648 = G__50658;
       continue
     }else {
-      var temp__4092__auto__ = cljs.core.seq.call(null, seq__20298);
+      var temp__4092__auto__ = cljs.core.seq.call(null, seq__50645);
       if(temp__4092__auto__) {
-        var seq__20298__$1 = temp__4092__auto__;
-        if(cljs.core.chunked_seq_QMARK_.call(null, seq__20298__$1)) {
-          var c__3073__auto__ = cljs.core.chunk_first.call(null, seq__20298__$1);
-          var G__20312 = cljs.core.chunk_rest.call(null, seq__20298__$1);
-          var G__20313 = c__3073__auto__;
-          var G__20314 = cljs.core.count.call(null, c__3073__auto__);
-          var G__20315 = 0;
-          seq__20298 = G__20312;
-          chunk__20299 = G__20313;
-          count__20300 = G__20314;
-          i__20301 = G__20315;
+        var seq__50645__$1 = temp__4092__auto__;
+        if(cljs.core.chunked_seq_QMARK_.call(null, seq__50645__$1)) {
+          var c__3073__auto__ = cljs.core.chunk_first.call(null, seq__50645__$1);
+          var G__50659 = cljs.core.chunk_rest.call(null, seq__50645__$1);
+          var G__50660 = c__3073__auto__;
+          var G__50661 = cljs.core.count.call(null, c__3073__auto__);
+          var G__50662 = 0;
+          seq__50645 = G__50659;
+          chunk__50646 = G__50660;
+          count__50647 = G__50661;
+          i__50648 = G__50662;
           continue
         }else {
-          var vec__20304 = cljs.core.first.call(null, seq__20298__$1);
-          var typ = cljs.core.nth.call(null, vec__20304, 0, null);
-          var path = cljs.core.nth.call(null, vec__20304, 1, null);
-          var a = cljs.core.nth.call(null, vec__20304, 2, null);
-          var b = cljs.core.nth.call(null, vec__20304, 3, null);
-          var node_20316 = castorocauda.core.select_path_dom.call(null, path);
-          var G__20305_20317 = typ;
-          if(cljs.core._EQ_.call(null, "\ufdd0:rem-att", G__20305_20317)) {
-            node_20316.removeAttribute(cljs.core.name.call(null, a))
+          var vec__50651 = cljs.core.first.call(null, seq__50645__$1);
+          var typ = cljs.core.nth.call(null, vec__50651, 0, null);
+          var path = cljs.core.nth.call(null, vec__50651, 1, null);
+          var a = cljs.core.nth.call(null, vec__50651, 2, null);
+          var b = cljs.core.nth.call(null, vec__50651, 3, null);
+          var node_50663 = castorocauda.dom.select_path_dom.call(null, base_el, path);
+          var G__50652_50664 = typ;
+          if(cljs.core._EQ_.call(null, "\ufdd0:rem-att", G__50652_50664)) {
+            node_50663.removeAttribute(cljs.core.name.call(null, a))
           }else {
-            if(cljs.core._EQ_.call(null, "\ufdd0:att", G__20305_20317)) {
-              node_20316.setAttribute(cljs.core.name.call(null, a), [cljs.core.str(b)].join(""))
+            if(cljs.core._EQ_.call(null, "\ufdd0:att", G__50652_50664)) {
+              node_50663.setAttribute(cljs.core.name.call(null, a), [cljs.core.str(b)].join(""))
             }else {
-              if(cljs.core._EQ_.call(null, "\ufdd0:html", G__20305_20317)) {
-                node_20316.innerHTML = [cljs.core.str(hiccups.runtime.render_html.call(null, a))].join("")
+              if(cljs.core._EQ_.call(null, "\ufdd0:html", G__50652_50664)) {
+                node_50663.innerHTML = [cljs.core.str(hiccups.runtime.render_html.call(null, a))].join("")
               }else {
                 if("\ufdd0:else") {
                   throw new Error([cljs.core.str("No matching clause: "), cljs.core.str(typ)].join(""));
@@ -22245,14 +22289,14 @@ castorocauda.core.propagate_dom_change = function propagate_dom_change(deltas) {
               }
             }
           }
-          var G__20318 = cljs.core.next.call(null, seq__20298__$1);
-          var G__20319 = null;
-          var G__20320 = 0;
-          var G__20321 = 0;
-          seq__20298 = G__20318;
-          chunk__20299 = G__20319;
-          count__20300 = G__20320;
-          i__20301 = G__20321;
+          var G__50665 = cljs.core.next.call(null, seq__50645__$1);
+          var G__50666 = null;
+          var G__50667 = 0;
+          var G__50668 = 0;
+          seq__50645 = G__50665;
+          chunk__50646 = G__50666;
+          count__50647 = G__50667;
+          i__50648 = G__50668;
           continue
         }
       }else {
@@ -22262,63 +22306,81 @@ castorocauda.core.propagate_dom_change = function propagate_dom_change(deltas) {
     break
   }
 };
-castorocauda.core.gendom = function gendom(dom, st) {
-  return cljs.core.swap_BANG_.call(null, castorocauda.core.dom_edn, function(old_dom) {
-    var new_dom = castorocauda.core.render_all.call(null, st);
-    castorocauda.core.propagate_dom_change.call(null, castorocauda.html.html_delta.call(null, old_dom, new_dom, cljs.core.PersistentVector.EMPTY, 0));
+castorocauda.dom.gendom = function gendom(new_dom, base_el) {
+  return cljs.core.swap_BANG_.call(null, castorocauda.dom.dom_edn, function(old_dom) {
+    castorocauda.dom.propagate_dom_change.call(null, castorocauda.html.html_delta.call(null, old_dom, new_dom, cljs.core.PersistentVector.EMPTY, 0), base_el);
     return new_dom
   })
 };
-castorocauda.core.castorocauda_m = cljs.core.PersistentArrayMap.fromArray(["\ufdd0:m-result", function castorocauda_m(v) {
-  return function(st) {
-    castorocauda.core.gendom.call(null, castorocauda.core.dom_edn, st);
-    return cljs.core.PersistentVector.fromArray([v, st], true)
-  }
-}, "\ufdd0:m-bind", function castorocauda_m(mv, f) {
-  return function(st) {
-    var vec__20323 = mv.call(null, st);
-    var v = cljs.core.nth.call(null, vec__20323, 0, null);
-    var new_st = cljs.core.nth.call(null, vec__20323, 1, null);
-    castorocauda.core.gendom.call(null, castorocauda.core.dom_edn, st);
-    return f.call(null, v).call(null, new_st)
-  }
-}], true);
-castorocauda.core.launch_app = function launch_app(renderer, toplevel) {
+castorocauda.dom.dom_ready = function dom_ready(fun) {
+  return window.onload = fun
+};
+castorocauda.dom.q_select = function q_select(q) {
+  return document.querySelector(q)
+};
+castorocauda.dom.q_select_all = function q_select_all(q) {
+  return document.querySelectorAll(q)
+};
+goog.provide("castorocauda.core");
+goog.require("cljs.core");
+goog.require("castorocauda.dom");
+castorocauda.core.app_state = cljs.core.atom.call(null, cljs.core.ObjMap.EMPTY);
+castorocauda.core.logg = function logg(x) {
+  var dom = document.getElementById("castorocauda-console");
+  var txt = dom.textContent;
+  return dom.textContent = [cljs.core.str(txt), cljs.core.str(cljs.core.prn_str.call(null, x))].join("")
+};
+castorocauda.core.patch_state = function patch_state(f) {
+  cljs.core.swap_BANG_.call(null, castorocauda.core.app_state, function(as) {
+    return cljs.core.merge.call(null, as, f.call(null, as))
+  });
+  return castorocauda.dom.gendom.call(null, castorocauda.core.render_all.call(null, cljs.core.deref.call(null, castorocauda.core.app_state)), castorocauda.core.toplevel_el.call(null))
+};
+castorocauda.core.on_click = function on_click(el, f) {
+  return el.addEventListener("click", function(e) {
+    return castorocauda.core.patch_state.call(null, cljs.core.partial.call(null, f, e))
+  })
+};
+castorocauda.core.launch_app = function launch_app(state, renderer, base_el) {
   castorocauda.core.render_all = renderer;
   castorocauda.core.toplevel_el = function toplevel_el() {
-    return toplevel
-  }
+    return base_el
+  };
+  cljs.core.reset_BANG_.call(null, castorocauda.core.app_state, state);
+  return castorocauda.dom.gendom.call(null, castorocauda.core.render_all.call(null, cljs.core.deref.call(null, castorocauda.core.app_state)), base_el)
 };
 goog.provide("castorocauda.example");
 goog.require("cljs.core");
+goog.require("castorocauda.dom");
+goog.require("castorocauda.stream");
 goog.require("castorocauda.core");
-goog.require("castorocauda.monads");
+goog.require("castorocauda.stream");
+goog.require("castorocauda.dom");
 goog.require("castorocauda.core");
-goog.require("castorocauda.monads");
-castorocauda.example.render_all = function render_all(p__23885) {
-  var map__23887 = p__23885;
-  var map__23887__$1 = cljs.core.seq_QMARK_.call(null, map__23887) ? cljs.core.apply.call(null, cljs.core.hash_map, map__23887) : map__23887;
-  var text = cljs.core.get.call(null, map__23887__$1, "\ufdd0:text");
-  return cljs.core.PersistentVector.fromArray(["\ufdd0:div", cljs.core.ObjMap.EMPTY, cljs.core.PersistentVector.fromArray(["\ufdd0:h1", cljs.core.ObjMap.EMPTY, text], true), cljs.core.PersistentVector.fromArray(["\ufdd0:input", cljs.core.PersistentArrayMap.fromArray(["\ufdd0:castorocauda", "\ufdd0:text-in", "\ufdd0:value", text], true)], true)], true)
+castorocauda.example.render_all = function render_all(p__50991) {
+  var map__50993 = p__50991;
+  var map__50993__$1 = cljs.core.seq_QMARK_.call(null, map__50993) ? cljs.core.apply.call(null, cljs.core.hash_map, map__50993) : map__50993;
+  var result = cljs.core.get.call(null, map__50993__$1, "\ufdd0:result");
+  var b = cljs.core.get.call(null, map__50993__$1, "\ufdd0:b");
+  var a = cljs.core.get.call(null, map__50993__$1, "\ufdd0:a");
+  return cljs.core.PersistentVector.fromArray(["\ufdd0:div", cljs.core.ObjMap.EMPTY, cljs.core.PersistentVector.fromArray(["\ufdd0:h1", cljs.core.ObjMap.EMPTY, [cljs.core.str(a), cljs.core.str("+"), cljs.core.str(b), cljs.core.str("="), cljs.core.str(result)].join("")], true), cljs.core.PersistentVector.fromArray(["\ufdd0:input#a-in", cljs.core.PersistentArrayMap.fromArray(["\ufdd0:value", a], true)], true), cljs.core.PersistentVector.fromArray(["\ufdd0:input#b-in", cljs.core.PersistentArrayMap.fromArray(["\ufdd0:value", 
+  b], true)], true)], true)
 };
-castorocauda.example.dom_ready = function dom_ready(fun) {
-  return window.onload = fun
-};
-castorocauda.example.on_click = function on_click(el, f, st) {
-  return el.addEventListener("click", function() {
-    console.log(cljs.core.deref.call(null, st));
-    return castorocauda.core.castorocauda_m.call(null, "\ufdd0:m-bind").call(null, castorocauda.monads.fetch_state.call(null), function(s) {
-      return castorocauda.core.castorocauda_m.call(null, "\ufdd0:m-result").call(null, cljs.core.reset_BANG_.call(null, st, s))
-    }).call(null, f.call(null, cljs.core.deref.call(null, st)))
-  })
+castorocauda.example.val_stream = function val_stream(el) {
+  return castorocauda.stream.map_fstream.call(null, function(e) {
+    return parseInt(e.target.value)
+  }, castorocauda.stream.dom_events.call(null, el, "keyup"))
 };
 castorocauda.example.main = function main() {
-  castorocauda.core.launch_app.call(null, castorocauda.example.render_all, document.getElementById("castorocauda"));
-  var xx = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.fromArray(["\ufdd0:text", "\u6700\u521d"], true));
-  return castorocauda.example.on_click.call(null, document, castorocauda.core.castorocauda_m.call(null, "\ufdd0:m-bind").call(null, castorocauda.monads.fetch_state.call(null), function(st) {
-    return castorocauda.core.castorocauda_m.call(null, "\ufdd0:m-bind").call(null, castorocauda.monads.set_state.call(null, cljs.core.PersistentArrayMap.fromArray(["\ufdd0:text", [cljs.core.str("\u6b21\u6b21"), cljs.core.str(st.call(null, "\ufdd0:text"))].join("")], true)), function(x) {
-      return castorocauda.core.castorocauda_m.call(null, "\ufdd0:m-result").call(null, x)
+  castorocauda.core.launch_app.call(null, cljs.core.PersistentArrayMap.fromArray(["\ufdd0:a", 2, "\ufdd0:b", 3, "\ufdd0:result", 5], true), castorocauda.example.render_all, castorocauda.dom.q_select.call(null, "#castorocauda"));
+  var a_stream = castorocauda.example.val_stream.call(null, castorocauda.dom.q_select.call(null, "#a-in"));
+  var b_stream = castorocauda.example.val_stream.call(null, castorocauda.dom.q_select.call(null, "#b-in"));
+  var c_stream = castorocauda.stream.merge_fstream.call(null, cljs.core._PLUS_, a_stream, b_stream);
+  return castorocauda.stream.map_fstream.call(null, function(res) {
+    console.log(cljs.core.clj__GT_js.call(null, cljs.core.deref.call(null, a_stream)));
+    return castorocauda.core.patch_state.call(null, function(st) {
+      return cljs.core.PersistentArrayMap.fromArray(["\ufdd0:a", cljs.core.first.call(null, cljs.core.deref.call(null, a_stream)), "\ufdd0:b", cljs.core.first.call(null, cljs.core.deref.call(null, b_stream)), "\ufdd0:result", res], true)
     })
-  }), xx)
+  }, c_stream)
 };
-castorocauda.example.dom_ready.call(null, castorocauda.example.main);
+castorocauda.dom.dom_ready.call(null, castorocauda.example.main);
