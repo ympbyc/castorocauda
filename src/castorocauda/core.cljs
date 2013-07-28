@@ -21,7 +21,7 @@
 
 
 
-(defn select-path-dom-
+(defn- select-path-dom-
   [start-el [{:keys [tag index]} & rest-path :as path]]
   (if (empty? path)
     start-el
@@ -32,12 +32,12 @@
 
 
 
-(defn select-path-dom [path]
+(defn- select-path-dom [path]
   (select-path-dom- (toplevel-el) path))
 
 
 
-(defn propagate-dom-change
+(defn- propagate-dom-change
   [deltas]
   (doseq [[typ path a b] deltas]
     (let [node (select-path-dom path)]
@@ -54,7 +54,7 @@
 
 
 
-(defn gendom
+(defn- gendom
   [dom st]
   (swap! dom-edn
          (fn [old-dom]

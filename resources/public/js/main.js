@@ -22144,14 +22144,14 @@ castorocauda.core.logg = function logg(x) {
   var txt = dom.textContent;
   return dom.textContent = [cljs.core.str(txt), cljs.core.str(cljs.core.prn_str.call(null, x))].join("")
 };
-castorocauda.core.select_path_dom_ = function select_path_dom_(start_el, p__19952) {
-  var vec__19955 = p__19952;
-  var map__19956 = cljs.core.nth.call(null, vec__19955, 0, null);
-  var map__19956__$1 = cljs.core.seq_QMARK_.call(null, map__19956) ? cljs.core.apply.call(null, cljs.core.hash_map, map__19956) : map__19956;
-  var index = cljs.core.get.call(null, map__19956__$1, "\ufdd0:index");
-  var tag = cljs.core.get.call(null, map__19956__$1, "\ufdd0:tag");
-  var rest_path = cljs.core.nthnext.call(null, vec__19955, 1);
-  var path = vec__19955;
+castorocauda.core.select_path_dom_ = function select_path_dom_(start_el, p__20285) {
+  var vec__20288 = p__20285;
+  var map__20289 = cljs.core.nth.call(null, vec__20288, 0, null);
+  var map__20289__$1 = cljs.core.seq_QMARK_.call(null, map__20289) ? cljs.core.apply.call(null, cljs.core.hash_map, map__20289) : map__20289;
+  var index = cljs.core.get.call(null, map__20289__$1, "\ufdd0:index");
+  var tag = cljs.core.get.call(null, map__20289__$1, "\ufdd0:tag");
+  var rest_path = cljs.core.nthnext.call(null, vec__20288, 1);
+  var path = vec__20288;
   if(cljs.core.empty_QMARK_.call(null, path)) {
     return start_el
   }else {
@@ -22168,27 +22168,27 @@ castorocauda.core.select_path_dom = function select_path_dom(path) {
   return castorocauda.core.select_path_dom_.call(null, castorocauda.core.toplevel_el.call(null), path)
 };
 castorocauda.core.propagate_dom_change = function propagate_dom_change(deltas) {
-  var seq__19965 = cljs.core.seq.call(null, deltas);
-  var chunk__19966 = null;
-  var count__19967 = 0;
-  var i__19968 = 0;
+  var seq__20298 = cljs.core.seq.call(null, deltas);
+  var chunk__20299 = null;
+  var count__20300 = 0;
+  var i__20301 = 0;
   while(true) {
-    if(i__19968 < count__19967) {
-      var vec__19969 = cljs.core._nth.call(null, chunk__19966, i__19968);
-      var typ = cljs.core.nth.call(null, vec__19969, 0, null);
-      var path = cljs.core.nth.call(null, vec__19969, 1, null);
-      var a = cljs.core.nth.call(null, vec__19969, 2, null);
-      var b = cljs.core.nth.call(null, vec__19969, 3, null);
-      var node_19973 = castorocauda.core.select_path_dom.call(null, path);
-      var G__19970_19974 = typ;
-      if(cljs.core._EQ_.call(null, "\ufdd0:rem-att", G__19970_19974)) {
-        node_19973.removeAttribute(cljs.core.name.call(null, a))
+    if(i__20301 < count__20300) {
+      var vec__20302 = cljs.core._nth.call(null, chunk__20299, i__20301);
+      var typ = cljs.core.nth.call(null, vec__20302, 0, null);
+      var path = cljs.core.nth.call(null, vec__20302, 1, null);
+      var a = cljs.core.nth.call(null, vec__20302, 2, null);
+      var b = cljs.core.nth.call(null, vec__20302, 3, null);
+      var node_20306 = castorocauda.core.select_path_dom.call(null, path);
+      var G__20303_20307 = typ;
+      if(cljs.core._EQ_.call(null, "\ufdd0:rem-att", G__20303_20307)) {
+        node_20306.removeAttribute(cljs.core.name.call(null, a))
       }else {
-        if(cljs.core._EQ_.call(null, "\ufdd0:att", G__19970_19974)) {
-          node_19973.setAttribute(cljs.core.name.call(null, a), [cljs.core.str(b)].join(""))
+        if(cljs.core._EQ_.call(null, "\ufdd0:att", G__20303_20307)) {
+          node_20306.setAttribute(cljs.core.name.call(null, a), [cljs.core.str(b)].join(""))
         }else {
-          if(cljs.core._EQ_.call(null, "\ufdd0:html", G__19970_19974)) {
-            node_19973.innerHTML = [cljs.core.str(hiccups.runtime.render_html.call(null, a))].join("")
+          if(cljs.core._EQ_.call(null, "\ufdd0:html", G__20303_20307)) {
+            node_20306.innerHTML = [cljs.core.str(hiccups.runtime.render_html.call(null, a))].join("")
           }else {
             if("\ufdd0:else") {
               throw new Error([cljs.core.str("No matching clause: "), cljs.core.str(typ)].join(""));
@@ -22197,46 +22197,46 @@ castorocauda.core.propagate_dom_change = function propagate_dom_change(deltas) {
           }
         }
       }
-      var G__19975 = seq__19965;
-      var G__19976 = chunk__19966;
-      var G__19977 = count__19967;
-      var G__19978 = i__19968 + 1;
-      seq__19965 = G__19975;
-      chunk__19966 = G__19976;
-      count__19967 = G__19977;
-      i__19968 = G__19978;
+      var G__20308 = seq__20298;
+      var G__20309 = chunk__20299;
+      var G__20310 = count__20300;
+      var G__20311 = i__20301 + 1;
+      seq__20298 = G__20308;
+      chunk__20299 = G__20309;
+      count__20300 = G__20310;
+      i__20301 = G__20311;
       continue
     }else {
-      var temp__4092__auto__ = cljs.core.seq.call(null, seq__19965);
+      var temp__4092__auto__ = cljs.core.seq.call(null, seq__20298);
       if(temp__4092__auto__) {
-        var seq__19965__$1 = temp__4092__auto__;
-        if(cljs.core.chunked_seq_QMARK_.call(null, seq__19965__$1)) {
-          var c__3073__auto__ = cljs.core.chunk_first.call(null, seq__19965__$1);
-          var G__19979 = cljs.core.chunk_rest.call(null, seq__19965__$1);
-          var G__19980 = c__3073__auto__;
-          var G__19981 = cljs.core.count.call(null, c__3073__auto__);
-          var G__19982 = 0;
-          seq__19965 = G__19979;
-          chunk__19966 = G__19980;
-          count__19967 = G__19981;
-          i__19968 = G__19982;
+        var seq__20298__$1 = temp__4092__auto__;
+        if(cljs.core.chunked_seq_QMARK_.call(null, seq__20298__$1)) {
+          var c__3073__auto__ = cljs.core.chunk_first.call(null, seq__20298__$1);
+          var G__20312 = cljs.core.chunk_rest.call(null, seq__20298__$1);
+          var G__20313 = c__3073__auto__;
+          var G__20314 = cljs.core.count.call(null, c__3073__auto__);
+          var G__20315 = 0;
+          seq__20298 = G__20312;
+          chunk__20299 = G__20313;
+          count__20300 = G__20314;
+          i__20301 = G__20315;
           continue
         }else {
-          var vec__19971 = cljs.core.first.call(null, seq__19965__$1);
-          var typ = cljs.core.nth.call(null, vec__19971, 0, null);
-          var path = cljs.core.nth.call(null, vec__19971, 1, null);
-          var a = cljs.core.nth.call(null, vec__19971, 2, null);
-          var b = cljs.core.nth.call(null, vec__19971, 3, null);
-          var node_19983 = castorocauda.core.select_path_dom.call(null, path);
-          var G__19972_19984 = typ;
-          if(cljs.core._EQ_.call(null, "\ufdd0:rem-att", G__19972_19984)) {
-            node_19983.removeAttribute(cljs.core.name.call(null, a))
+          var vec__20304 = cljs.core.first.call(null, seq__20298__$1);
+          var typ = cljs.core.nth.call(null, vec__20304, 0, null);
+          var path = cljs.core.nth.call(null, vec__20304, 1, null);
+          var a = cljs.core.nth.call(null, vec__20304, 2, null);
+          var b = cljs.core.nth.call(null, vec__20304, 3, null);
+          var node_20316 = castorocauda.core.select_path_dom.call(null, path);
+          var G__20305_20317 = typ;
+          if(cljs.core._EQ_.call(null, "\ufdd0:rem-att", G__20305_20317)) {
+            node_20316.removeAttribute(cljs.core.name.call(null, a))
           }else {
-            if(cljs.core._EQ_.call(null, "\ufdd0:att", G__19972_19984)) {
-              node_19983.setAttribute(cljs.core.name.call(null, a), [cljs.core.str(b)].join(""))
+            if(cljs.core._EQ_.call(null, "\ufdd0:att", G__20305_20317)) {
+              node_20316.setAttribute(cljs.core.name.call(null, a), [cljs.core.str(b)].join(""))
             }else {
-              if(cljs.core._EQ_.call(null, "\ufdd0:html", G__19972_19984)) {
-                node_19983.innerHTML = [cljs.core.str(hiccups.runtime.render_html.call(null, a))].join("")
+              if(cljs.core._EQ_.call(null, "\ufdd0:html", G__20305_20317)) {
+                node_20316.innerHTML = [cljs.core.str(hiccups.runtime.render_html.call(null, a))].join("")
               }else {
                 if("\ufdd0:else") {
                   throw new Error([cljs.core.str("No matching clause: "), cljs.core.str(typ)].join(""));
@@ -22245,14 +22245,14 @@ castorocauda.core.propagate_dom_change = function propagate_dom_change(deltas) {
               }
             }
           }
-          var G__19985 = cljs.core.next.call(null, seq__19965__$1);
-          var G__19986 = null;
-          var G__19987 = 0;
-          var G__19988 = 0;
-          seq__19965 = G__19985;
-          chunk__19966 = G__19986;
-          count__19967 = G__19987;
-          i__19968 = G__19988;
+          var G__20318 = cljs.core.next.call(null, seq__20298__$1);
+          var G__20319 = null;
+          var G__20320 = 0;
+          var G__20321 = 0;
+          seq__20298 = G__20318;
+          chunk__20299 = G__20319;
+          count__20300 = G__20320;
+          i__20301 = G__20321;
           continue
         }
       }else {
@@ -22276,9 +22276,9 @@ castorocauda.core.castorocauda_m = cljs.core.PersistentArrayMap.fromArray(["\ufd
   }
 }, "\ufdd0:m-bind", function castorocauda_m(mv, f) {
   return function(st) {
-    var vec__19990 = mv.call(null, st);
-    var v = cljs.core.nth.call(null, vec__19990, 0, null);
-    var new_st = cljs.core.nth.call(null, vec__19990, 1, null);
+    var vec__20323 = mv.call(null, st);
+    var v = cljs.core.nth.call(null, vec__20323, 0, null);
+    var new_st = cljs.core.nth.call(null, vec__20323, 1, null);
     castorocauda.core.gendom.call(null, castorocauda.core.dom_edn, st);
     return f.call(null, v).call(null, new_st)
   }
@@ -22295,26 +22295,30 @@ goog.require("castorocauda.core");
 goog.require("castorocauda.monads");
 goog.require("castorocauda.core");
 goog.require("castorocauda.monads");
-castorocauda.example.render_all = function render_all(p__19322) {
-  var map__19324 = p__19322;
-  var map__19324__$1 = cljs.core.seq_QMARK_.call(null, map__19324) ? cljs.core.apply.call(null, cljs.core.hash_map, map__19324) : map__19324;
-  var text = cljs.core.get.call(null, map__19324__$1, "\ufdd0:text");
+castorocauda.example.render_all = function render_all(p__23885) {
+  var map__23887 = p__23885;
+  var map__23887__$1 = cljs.core.seq_QMARK_.call(null, map__23887) ? cljs.core.apply.call(null, cljs.core.hash_map, map__23887) : map__23887;
+  var text = cljs.core.get.call(null, map__23887__$1, "\ufdd0:text");
   return cljs.core.PersistentVector.fromArray(["\ufdd0:div", cljs.core.ObjMap.EMPTY, cljs.core.PersistentVector.fromArray(["\ufdd0:h1", cljs.core.ObjMap.EMPTY, text], true), cljs.core.PersistentVector.fromArray(["\ufdd0:input", cljs.core.PersistentArrayMap.fromArray(["\ufdd0:castorocauda", "\ufdd0:text-in", "\ufdd0:value", text], true)], true)], true)
 };
 castorocauda.example.dom_ready = function dom_ready(fun) {
   return window.onload = fun
 };
+castorocauda.example.on_click = function on_click(el, f, st) {
+  return el.addEventListener("click", function() {
+    console.log(cljs.core.deref.call(null, st));
+    return castorocauda.core.castorocauda_m.call(null, "\ufdd0:m-bind").call(null, castorocauda.monads.fetch_state.call(null), function(s) {
+      return castorocauda.core.castorocauda_m.call(null, "\ufdd0:m-result").call(null, cljs.core.reset_BANG_.call(null, st, s))
+    }).call(null, f.call(null, cljs.core.deref.call(null, st)))
+  })
+};
 castorocauda.example.main = function main() {
   castorocauda.core.launch_app.call(null, castorocauda.example.render_all, document.getElementById("castorocauda"));
-  var xx = castorocauda.core.castorocauda_m.call(null, "\ufdd0:m-bind").call(null, castorocauda.monads.fetch_state.call(null), function(x) {
-    return castorocauda.core.castorocauda_m.call(null, "\ufdd0:m-result").call(null, x)
-  }).call(null, cljs.core.PersistentArrayMap.fromArray(["\ufdd0:text", "\u6700\u521d"], true));
-  return document.body.addEventListener("click", function() {
-    return castorocauda.core.castorocauda_m.call(null, "\ufdd0:m-bind").call(null, castorocauda.monads.set_state.call(null, cljs.core.PersistentArrayMap.fromArray(["\ufdd0:text", [cljs.core.str("\u6b21"), cljs.core.str(new Date)].join("")], true)), function(x) {
-      return castorocauda.core.castorocauda_m.call(null, "\ufdd0:m-bind").call(null, castorocauda.monads.fetch_state.call(null), function(x__$1) {
-        return castorocauda.core.castorocauda_m.call(null, "\ufdd0:m-result").call(null, x__$1)
-      })
-    }).call(null, xx)
-  })
+  var xx = cljs.core.atom.call(null, cljs.core.PersistentArrayMap.fromArray(["\ufdd0:text", "\u6700\u521d"], true));
+  return castorocauda.example.on_click.call(null, document, castorocauda.core.castorocauda_m.call(null, "\ufdd0:m-bind").call(null, castorocauda.monads.fetch_state.call(null), function(st) {
+    return castorocauda.core.castorocauda_m.call(null, "\ufdd0:m-bind").call(null, castorocauda.monads.set_state.call(null, cljs.core.PersistentArrayMap.fromArray(["\ufdd0:text", [cljs.core.str("\u6b21\u6b21"), cljs.core.str(st.call(null, "\ufdd0:text"))].join("")], true)), function(x) {
+      return castorocauda.core.castorocauda_m.call(null, "\ufdd0:m-result").call(null, x)
+    })
+  }), xx)
 };
 castorocauda.example.dom_ready.call(null, castorocauda.example.main);

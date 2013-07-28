@@ -1,5 +1,5 @@
 (ns castorocauda.example
-  (:use [castorocauda.monads :only [state-m set-state fetch-state]]
+  (:use [castorocauda.monads :only [state-m set-state fetch-state patch-state]]
         [castorocauda.core :only [castorocauda-m launch-app]])
   (:use-macros [castorocauda.monads-macro :only [domonad defn-m]]))
 
@@ -15,19 +15,28 @@
   (set! (.-onload js/window) fun))
 
 
+(defn on-click
+  "TODO: officialize this"
+  [el f st]
+  (.addEventListener
+   el "click"
+   (fn []
+     (.log js/console @st)
+     ((domonad castorocauda-m
+               [s (fetch-state)]
+               (reset! st s))
+      (f @st)))))
+
+
 (defn main []
   (launch-app render-all (.getElementById js/document "castorocauda"))
 
-  (let [xx
-        ((domonad castorocauda-m
-                  [x (fetch-state)]
-                  x)
-         {:text "最初"})]
-    (.addEventListener document/body "click"
-                       (fn []
-                         ((domonad castorocauda-m
-                                   [x (set-state {:text (str "次" (js/Date.))})
-                                    x (fetch-state)]
-                                   x) xx)))))
+  (let [xx (atom {:text "最初"})]
+    (on-click js/document
+              (domonad castorocauda-m
+                       [st (fetch-state)
+                        x (set-state {:text (str "次次" (st :text))})]
+                       x)
+              xx)))
 
 (dom-ready main)
