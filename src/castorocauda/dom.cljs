@@ -9,6 +9,9 @@
 
 
 (defn- select-path-dom
+  "start-el :: HTMLElement
+   path :: [{:index Int :tag Keyword}]
+   -> HTMLElement"
   [start-el [{:keys [tag index]} & rest-path :as path]]
   (if (empty? path)
     start-el
@@ -20,6 +23,9 @@
 
 
 (defn- propagate-dom-change
+  "deltas :: [:html   path hiccup nil]
+           | [:att    path attr-name attr-value]
+           | [rem-att path attr-name]"
   [deltas base-el]
   (doseq [[typ path a b] deltas]
     (let [node (select-path-dom base-el path)]
@@ -35,6 +41,8 @@
 
 
 (defn- gendom
+  "new-dom :: hiccup
+   base-el :: HTMLElement"
   [new-dom base-el]
   (swap! dom-edn
          (fn [old-dom]

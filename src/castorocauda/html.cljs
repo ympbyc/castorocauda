@@ -1,12 +1,14 @@
 (ns castorocauda.html)
 
 (defn pad
+  "Widen the collection `xs` upto length `n` and fill the blank with `padd`."
   [xs n padd]
   (let [diff-n (- n (count xs))]
     (concat xs (map (fn [_] padd) (range diff-n)))))
 
 
 (defn attr-diffs
+  "Calcurate the difference between two attribute map."
   [attr1 attr2 path]
   (let [diff (reduce (fn [acc [k v]]
                        (cond
@@ -25,6 +27,7 @@
     diff))
 
 (defn mk-path
+  "Path is {:tag Keyword :index Int}"
   [tag n]
   {:tag   tag
    :index n})
@@ -46,13 +49,13 @@
      (list [:html path new-dom nil])
 
      (empty? new-dom)
-     (list [:html new-path nil nil])
+     (list [:html path nil nil])
 
      (empty? old-dom)
-     (list [:html new-path new-dom nil])
+     (list [:html path new-dom nil])
 
      (not= tg1 tg2)
-     (list [:html new-path new-dom nil])
+     (list [:html path new-dom nil])
 
      (not= at1 at2)
      (let [x (max (count chs1) (count chs2))]
@@ -70,23 +73,3 @@
                (pad chs1 x nil)
                (pad chs2 x nil)
                (range x))))))
-
-
-
-(comment html-delta
- [:div {}
-  [:h1 {} "aaa"]
-  [:textarea {:value "ympbyc"}]
-  [:p {} "paagraph" [:a {:href "x"} "eee"]]]
-
- [:div {}
-  [:h1 {} "aaa"]
-  [:textarea {:value "kasukabe"}]
-  [:p {} "paragraph" [:a {:href "y"} "eee"]]]
-
- [])
-
-
-(comment list [:att [:div :textarea] :value "kasukabe"]
-      [:html [:div :p] "paagraph" nil]
-      [:att [:div :p :a] :href "x"])

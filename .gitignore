@@ -1,6 +1,6 @@
+*.js
 /target
 .DS_Store
 *~
 .\#*
 \#*
-resources/public/js/
