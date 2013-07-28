@@ -2,6 +2,7 @@
   "Simple monads")
 
 
+
 ;;;State
 (def state-m
   {:m-result
@@ -17,7 +18,7 @@
 
 (defn patch-state [f]
   (fn [st]
-    [st (patch st (f st))]))
+    [st (f st)]))
 
 
 (defn fetch-state []
@@ -27,6 +28,8 @@
 (defn set-state [new-state]
   (fn [old-state]
     [old-state new-state]))
+
+
 
 
 
