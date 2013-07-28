@@ -7,9 +7,8 @@
 
 (defn render-all [{:keys [a b result]
                    :or   {a 0, b 0, result 0}}]
-  (.log js/console a)
-  [:div {:id "example-app"}
-   [:h1 {}  (str a "+" b "=" result)]
+  [:div#example-app
+   [:h1 (str a "+" b "=" result)]
    [:input#a-in {:value a}]
    [:input#b-in {:value b}]])
 

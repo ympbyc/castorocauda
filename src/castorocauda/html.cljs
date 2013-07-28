@@ -39,7 +39,11 @@
   [old-dom new-dom path n]
   (let [[tg1 at1 & chs1] old-dom
         [tg2 at2 & chs2] new-dom
-        new-path (conj path (mk-path tg2 n))]
+        new-path (conj path (mk-path tg2 n))
+
+        ;; attributes can be ommited
+        [at1 chs1] (if (map? at1) [at1 chs1] [{}  (cons at1 chs1)])
+        [at2 chs2] (if (map? at2) [at2 chs2] [{}  (cons at2 chs2)])]
     (cond
      (= new-dom old-dom)
      '()
