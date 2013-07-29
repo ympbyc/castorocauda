@@ -1,5 +1,11 @@
 (ns castorocauda.html)
 
+
+(defn prn-log
+  [x]
+  (.log js/console (prn-str x))
+  x)
+
 (defn pad
   "Widen the collection `xs` upto length `n` and fill the blank with `padd`."
   [xs n padd]
@@ -32,6 +38,7 @@
   {:tag   tag
    :index n})
 
+(declare delta-dive)
 
 (defn html-delta
   "Hiccup * Hiccup * [Path] * Int -> [Delta]
@@ -45,6 +52,9 @@
         [at1 chs1] (if (map? at1) [at1 chs1] [{}  (cons at1 chs1)])
         [at2 chs2] (if (map? at2) [at2 chs2] [{}  (cons at2 chs2)])]
     (cond
+     (nil? new-dom)
+     '()
+
      (= new-dom old-dom)
      '()
 
@@ -62,18 +72,50 @@
      (list [:html path new-dom nil])
 
      (not= at1 at2)
-     (let [x (max (count chs1) (count chs2))]
-       (concat (attr-diffs at1 at2 new-path)
-               (mapcat (fn [ch1 ch2 idx]
-                         (html-delta ch1 ch2 new-path idx))
-                       (pad chs1 x nil)
-                       (pad chs2 x nil)
-                       (range x))))
+     (concat (attr-diffs at1 at2 new-path)
+             (delta-dive chs1 chs2 new-path))
 
      :else
-     (let [x (max (count chs1) (count chs2))]
-       (mapcat (fn [ch1 ch2 idx]
-                 (html-delta ch1 ch2 new-path idx))
-               (pad chs1 x nil)
-               (pad chs2 x nil)
-               (range x))))))
+     (delta-dive chs1 chs2 new-path))))
+
+
+(defn path=
+  [[_ path1 _ _] [_ path2 _ _]]
+  (= path1 path2))
+
+
+(defn merge-delta
+  [[tg path a _] [_ _ b _]]
+  (cond
+   (and (seq? a) (seq? b))
+   [tg path (concat a b) nil]
+
+   (seq? b)
+   [tg path (cons a b) nil]
+
+   (seq? a)
+   [tg path (concat a [b]) nil]
+
+   :else
+   [tg path (list a b) nil]))
+
+
+(defn delta-dive
+  [chs1 chs2 new-path]
+  (let [x (max (count chs1) (count chs2))
+        deltas (mapcat (fn [ch1 ch2 idx]
+                    (html-delta ch1 ch2 new-path idx))
+                  (pad chs1 x nil)
+                  (pad chs2 x nil)
+                  (range x))
+        html-ds (filter (fn [[x & _]] (= x :html)) deltas)
+        attr-ds (filter (comp not empty?) (filter (fn [[x & _ :as xs]] (not= x :html)) deltas))
+        merged-html-ds (reduce (fn [d1 d2]
+                                 (if (path= d1 d2)
+                                   (merge-delta d1 d2)
+                                   d1))
+                               (first html-ds) (rest html-ds))]
+    (->>
+     (or merged-html-ds '())
+     list
+     (concat attr-ds))))

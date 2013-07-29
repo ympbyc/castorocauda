@@ -4,6 +4,11 @@
   (:use-macros [hiccups.core :only [html]]))
 
 
+(defn prn-log
+  [x]
+  (.log js/console (prn-str x))
+  x)
+
 ;;Current DOM represented in EDN
 (def dom-edn (atom []))
 
@@ -27,6 +32,7 @@
            | [:att    path attr-name attr-value]
            | [rem-att path attr-name]"
   [deltas base-el]
+  (prn-log deltas)
   (doseq [[typ path a b] deltas]
     (let [node (select-path-dom base-el path)]
       (case typ

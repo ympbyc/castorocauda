@@ -10,7 +10,11 @@
   [:div#example-app
    [:h1 (str a "+" b "=" result)]
    [:input#a-in {:value a}]
-   [:input#b-in {:value b}]])
+   [:input#b-in {:value b}]
+   (if (> a 5) [:div
+                [:a {:href "..."} "clojure"]
+                [:p "激しく動かすとやばそう"]]
+       [:div "5以上"])])
 
 
 (defn val-stream

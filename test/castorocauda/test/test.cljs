@@ -7,3 +7,12 @@
   (js/deepEqual (clj->js x)
                 (clj->js y)
                 mes))
+
+
+(def ok js/ok)
+
+
+(defn prn-log
+  [x]
+  (.log js/console (prn-str x))
+  x)
