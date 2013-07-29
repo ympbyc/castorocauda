@@ -10,4 +10,8 @@
   :cljsbuild {:builds [{:source-paths ["src"]
                         :compiler {:output-to "resources/public/js/main.js"
                                    :optimizations :whitespace
+                                   :pretty-print true}}
+                       {:source-paths ["test"]
+                        :compiler {:output-to "resources/public/js/test.js"
+                                   :optimizations :whitespace
                                    :pretty-print true}}]})
