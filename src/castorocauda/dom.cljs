@@ -1,7 +1,7 @@
 (ns castorocauda.dom
-  (:require [castorocauda.html :refer [html-delta]]
+  (:require [castorocauda.html :refer [html-delta wrap-tags]]
             [hiccups.runtime :as hiccupsrt])
-  (:use-macros [hiccups.core :only [html]]))
+  (:require-macros [hiccups.core :as hics]))
 
 
 (defn prn-log
@@ -32,18 +32,38 @@
            | [:att    path attr-name attr-value]
            | [rem-att path attr-name]"
   [deltas base-el]
-  (prn-log deltas)
-  (doseq [[typ path a b] deltas]
-    (let [node (select-path-dom base-el path)]
-      (case typ
-        :html
-        (set! (.-innerHTML node) (html a))
+  (let [created-els (atom [])] ;;<-- TODO: recur
+    (doseq [[typ path a b :as delta] deltas]
+      ;;(prn-log (str "DELTA: " delta))
+      ;;(prn-log (->> (wrap-tags a) (drop 1) first))
+      ;;(prn-log path)
+      (let [path (rest path)
+            node (select-path-dom base-el path)]
+        (.log js/console node)
+        (prn-log delta)
+        (case typ
+          :html
+          (set! (.-innerHTML node) (hics/html (->> (wrap-tags a) (drop 1) first)))
 
-        :att
-        (.setAttribute node (name a) (str b))
+          :child-html
+          (do
+            (if (empty? (filter #(= path %) @created-els))
+              ;;if wrapper element hasn't already been created
+              (set! (.-innerHTML node) (hics/html (wrap-tags a)))
 
-        :rem-att
-        (.removeAttribute node (name a))))))
+              ;;otherwise, append child to the wrapper element
+              (let [w-node   (aget (.-childNodes node) 0)         ;;the wrapper
+                    html-str (hics/html (wrap-tags a))
+                    doc      (.parseFromString (js/DOMParser.) html-str "application/xml")]
+                (.appendChild w-node
+                              (.-firstChild doc))))
+            (swap! created-els (partial cons path)))
+
+          :att
+          (.setAttribute node (name a) (str b))
+
+          :rem-att
+          (.removeAttribute node (name a)))))))
 
 
 (defn- gendom

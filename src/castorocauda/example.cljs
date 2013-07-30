@@ -11,10 +11,12 @@
    [:h1 (str a "+" b "=" result)]
    [:input#a-in {:value a}]
    [:input#b-in {:value b}]
-   (if (> a 5) [:div
+   (if (> result 5) [:div
                 [:a {:href "..."} "clojure"]
-                [:p "激しく動かすとやばそう"]]
-       [:div "5以上"])])
+                [:p "5以上"]
+                "A wild TextNode appears"
+                [:p "OK"]]
+       [:div "5以下"])])
 
 
 (defn val-stream

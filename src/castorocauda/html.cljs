@@ -46,7 +46,8 @@
   [old-dom new-dom path n]
   (let [[tg1 at1 & chs1] old-dom
         [tg2 at2 & chs2] new-dom
-        new-path (conj path (mk-path tg2 n))
+        cur-path  (conj path (mk-path :div.castorocauda-wrap n))
+        next-path (conj cur-path (mk-path tg2 0))
 
         ;; attributes can be ommited
         [at1 chs1] (if (map? at1) [at1 chs1] [{}  (cons at1 chs1)])
@@ -59,63 +60,39 @@
      '()
 
      (or (not (coll? new-dom))
-         (not (coll? new-dom)))
-     (list [:html path new-dom nil])
+         (not (coll? old-dom)))
+     ;;new-dom is TextNode and -> update-parent
+     ;;new-dom is element and old one was TextNode -> update parent
+     (list [:child-html path new-dom nil])
+
 
      (empty? new-dom)
-     (list [:html path nil nil])
+     (list [:html cur-path nil nil])
 
      (empty? old-dom)
-     (list [:html path new-dom nil])
+     (list [:html cur-path new-dom nil])
 
      (not= tg1 tg2)
-     (list [:html path new-dom nil])
+     (list [:html cur-path new-dom nil])
 
      (not= at1 at2)
-     (concat (attr-diffs at1 at2 new-path)
-             (delta-dive chs1 chs2 new-path))
+     (concat (attr-diffs at1 at2 next-path)
+             (delta-dive chs1 chs2 next-path))
 
      :else
-     (delta-dive chs1 chs2 new-path))))
+     (delta-dive chs1 chs2 next-path))))
 
 
-(defn path=
-  [[_ path1 _ _] [_ path2 _ _]]
-  (= path1 path2))
 
+(defn wrap-tags
+  "Wrap every tag with :div.castorocauda-wrap"
+  [dom]
+  (let [[tag attrs & children] dom
+        [attrs children] (if (map? attrs) [attrs children] [{} (cons attrs children)])]
+    (cond
+     (not (coll? dom))
+     [:div.castorocauda-wrap dom]
 
-(defn merge-delta
-  [[tg path a _] [_ _ b _]]
-  (cond
-   (and (seq? a) (seq? b))
-   [tg path (concat a b) nil]
-
-   (seq? b)
-   [tg path (cons a b) nil]
-
-   (seq? a)
-   [tg path (concat a [b]) nil]
-
-   :else
-   [tg path (list a b) nil]))
-
-
-(defn delta-dive
-  [chs1 chs2 new-path]
-  (let [x (max (count chs1) (count chs2))
-        deltas (mapcat (fn [ch1 ch2 idx]
-                    (html-delta ch1 ch2 new-path idx))
-                  (pad chs1 x nil)
-                  (pad chs2 x nil)
-                  (range x))
-        html-ds (filter (fn [[x & _]] (= x :html)) deltas)
-        attr-ds (filter (comp not empty?) (filter (fn [[x & _ :as xs]] (not= x :html)) deltas))
-        merged-html-ds (reduce (fn [d1 d2]
-                                 (if (path= d1 d2)
-                                   (merge-delta d1 d2)
-                                   d1))
-                               (first html-ds) (rest html-ds))]
-    (->>
-     (or merged-html-ds '())
-     list
-     (concat attr-ds))))
+     :else
+     [:div.castorocauda-wrap
+      [tag attrs (map wrap-tags children)]])))

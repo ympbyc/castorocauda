@@ -54,7 +54,7 @@
               [:i "good"]])
 
 
-(qtest "html-delta"
+(comment qtest "html-delta"
       (de
        (html-delta
         [] [] [] 0)
@@ -74,8 +74,8 @@
         example
         [:div "clojure"]
         [] 1)
-          (list [:html [(mk-path :div 1)] "clojure" nil])
-          "new-dom become TextNode. Index properly affects the result.")
+       (list [:html [(mk-path :div 1)] "clojure" nil])
+       "new-dom become TextNode. Index properly affects the result.")
 
       (de
        (html-delta
@@ -87,7 +87,6 @@
                                              [:i "good"]) nil])
        "new-dom become element node")
 
-
       (de
        (html-delta
         example
@@ -95,7 +94,6 @@
         [(mk-path :div 1)] 2)
        (list [:html [(mk-path :div 1)] nil nil])
        "new-dom empty")
-
 
 
       (de
