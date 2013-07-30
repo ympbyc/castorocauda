@@ -1,6 +1,6 @@
 (ns castorocauda.core
   (:require [castorocauda.dom :as cdom]
-            [castorocauda.stream :as strm]))
+            [castorocauda.timeline :refer [tl-merge tl-map]]))
 
 
 (defn launch-app
@@ -16,11 +16,11 @@
   (let [state (state-gen)
         st-keys (keys state)]
     (->> (vals state)
-         (apply (partial strm/merge-fstream (comp flatten list)))
+         (apply (partial tl-merge (comp flatten list)))
 
-         (strm/map-fstream
+         (tl-map
           (fn [x] (into {} (map (fn [x y] [x y]) st-keys x))))
 
-         (strm/map-fstream
+         (tl-map
           (fn [state]
             (cdom/gendom (render-all state) base-el))))))

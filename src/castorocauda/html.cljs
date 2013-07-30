@@ -1,6 +1,5 @@
 (ns castorocauda.html)
 
-
 (defn prn-log
   [x]
   (.log js/console (prn-str x))
@@ -53,9 +52,6 @@
         [at1 chs1] (if (map? at1) [at1 chs1] [{}  (cons at1 chs1)])
         [at2 chs2] (if (map? at2) [at2 chs2] [{}  (cons at2 chs2)])]
     (cond
-     (nil? new-dom)
-     '()
-
      (= new-dom old-dom)
      '()
 
@@ -82,6 +78,15 @@
      :else
      (delta-dive chs1 chs2 next-path))))
 
+
+(defn delta-dive
+  [chs1 chs2 next-path]
+  (let [x  (max (count chs1) (count chs2))]
+    (mapcat (fn [ch1 ch2 idx]
+              (html-delta ch1 ch2 next-path idx))
+            (pad chs1 x nil)
+            (pad chs2 x nil)
+            (range x))))
 
 
 (defn wrap-tags

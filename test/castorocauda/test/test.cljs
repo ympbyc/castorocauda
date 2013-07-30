@@ -1,6 +1,8 @@
 (ns test.test)
 
-(def se js/strictEqual)
+(defn prn=
+  [x y mes]
+  (js/strictEqual (prn-str x) (prn-str y) mes))
 
 (defn de
   [x y mes]

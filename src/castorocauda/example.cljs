@@ -1,7 +1,7 @@
 (ns castorocauda.example
   (:require [castorocauda.core :as castorocauda])
   (:use [castorocauda.dom  :only [dom-ready q-select]]
-        [castorocauda.stream :only [mk-fstream map-fstream merge-fstream cons-fstream dom-events]])
+        [castorocauda.timeline :only [tl-map tl-filter tl-merge dom-events]])
   (:use-macros [castorocauda.macros :only [run-app]]))
 
 
@@ -23,8 +23,9 @@
   [el]
   (->>
    (dom-events el "keyup")
-   (map-fstream (fn [e]
-                  (js/parseInt (.-value (.-target e)))))))
+   (tl-map (fn [e]
+             (js/parseInt (.-value (.-target e)))))
+   (tl-filter (comp not js/isNaN))))
 
 
 (defn main []
@@ -33,7 +34,7 @@
          b-stream (val-stream (q-select "#b-in"))]
      {:a      a-stream
       :b      b-stream
-      :result (merge-fstream + a-stream b-stream)})
+      :result (tl-filter identity (tl-merge + a-stream b-stream))})
    render-all
    (q-select "#castorocauda")))
 
