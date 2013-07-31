@@ -1,5 +1,10 @@
 (ns castorocauda.html)
 
+(defn prn-log
+  [x]
+  (.log js/console (prn-str x))
+  x)
+
 (defn pad
   "Widen the collection `xs` upto length `n` and fill the blank with `padd`."
   [xs n padd]
@@ -33,47 +38,92 @@
    :index n})
 
 
-(defn html-delta
+(declare normalize)
+
+(defn merge-strings
+  "Group adjoining strings. This corresponds to browsers' behaviour."
+  [lst]
+  (if-let [[x & more] lst]
+    (if-let [[y & more] more]
+      (if (and (string? x) (string? y))
+        (merge-strings (cons (str x y) more))
+        (cons x (merge-strings (cons y more))))
+      lst)
+    lst))
+
+
+(defn- flatten-children
+  "([:div 1] ([:p 2] [:b 3]) [:i 4]) -> ([:div 1] [:p 2] [:b 3] [:i 4])"
+  [acc x]
+  (if (list? x)
+    (concat acc x)
+    (concat acc (list x))))
+
+
+(defn normalize
+  "[:div xxx yyy]          -> [:div {} (xxx yyy)]
+   [:div {} xxx yyy]       -> [:div {} (xxx yyy)]
+   [:div {} xxx (yyy) zzz] -> [:div {} (xxx yyy zzz)]
+   hello                   -> [:_textNode {} hello]"
+  [el]
+  (let [[tg at & chs] el
+        [at chs]      (cond (map? at) [at chs]
+                            (nil? at) [{} chs]
+                            :else     [{}  (cons at chs)])
+        [tg chs]      (if (keyword? tg) [tg chs] [:span.ca-text-node (cons tg chs)])
+        chs           (merge-strings chs)
+        chs           (reduce flatten-children '() chs)]
+    [tg at chs]))
+
+
+(declare delta-dive)
+
+(defn- html-delta-
   "Hiccup * Hiccup * [Path] * Int -> [Delta]
    where type Delta = [typ path att-name val]"
   [old-dom new-dom path n]
-  (let [[tg1 at1 & chs1] old-dom
-        [tg2 at2 & chs2] new-dom
-        new-path (conj path (mk-path tg2 n))
+  (cond
+   (nil? old-dom)
+   (list [:append path new-dom nil])
 
-        ;; attributes can be ommited
-        [at1 chs1] (if (map? at1) [at1 chs1] [{}  (cons at1 chs1)])
-        [at2 chs2] (if (map? at2) [at2 chs2] [{}  (cons at2 chs2)])]
-    (cond
-     (= new-dom old-dom)
-     '()
+   (nil? new-dom)
+   (list [:remove path nil n])
 
-     (or (not (coll? new-dom))
-         (not (coll? new-dom)))
-     (list [:html path new-dom nil])
+   :else
+   (let [[tg1 at1 chs1 :as old-dom] (normalize old-dom)
+         [tg2 at2 chs2 :as new-dom] (normalize new-dom)
+         next-path (conj path (mk-path tg2 n))]
+     (cond
+      (= new-dom old-dom)
+      '()
 
-     (empty? new-dom)
-     (list [:html path nil nil])
+      (= tg1 tg2 :span.ca-text-node)
+      (list [:nodeValue next-path (first chs2) nil])
 
-     (empty? old-dom)
-     (list [:html path new-dom nil])
+      (= tg2 :span.ca-text-node) ;only the new-dom is textnode
+      (list [:swap next-path new-dom nil])
 
-     (not= tg1 tg2)
-     (list [:html path new-dom nil])
+      (not= tg1 tg2)
+      (list [:swap next-path [tg2 at2 (map normalize chs2)] nil])
 
-     (not= at1 at2)
-     (let [x (max (count chs1) (count chs2))]
-       (concat (attr-diffs at1 at2 new-path)
-               (mapcat (fn [ch1 ch2 idx]
-                         (html-delta ch1 ch2 new-path idx))
-                       (pad chs1 x nil)
-                       (pad chs2 x nil)
-                       (range x))))
+      (not= at1 at2)
+      #(concat (attr-diffs at1 at2 next-path)
+               (delta-dive chs1 chs2 next-path))
 
-     :else
-     (let [x (max (count chs1) (count chs2))]
-       (mapcat (fn [ch1 ch2 idx]
-                 (html-delta ch1 ch2 new-path idx))
-               (pad chs1 x nil)
-               (pad chs2 x nil)
-               (range x))))))
+      :else
+      #(delta-dive chs1 chs2 next-path)))))
+
+
+(defn html-delta
+  [old-dom new-dom path n]
+  (trampoline html-delta- old-dom new-dom path n))
+
+
+(defn- delta-dive
+  [chs1 chs2 next-path]
+  (let [x  (max (count chs1) (count chs2))]
+    (mapcat (fn [ch1 ch2 idx]
+              (trampoline html-delta- ch1 ch2 next-path idx))
+            (pad chs1 x nil)
+            (pad chs2 x nil)
+            (range x))))
