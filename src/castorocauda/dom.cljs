@@ -2,6 +2,8 @@
   (:require [castorocauda.html :refer [html-delta wrap-tags]]
             [crate.core :as crate]
             [goog.dom :as gdom]
+            [goog.fx.dom :as domfx]
+            [goog.events :as gevents]
             [hiccups.runtime :as hiccupsrt])
   (:require-macros [hiccups.core :as hiccups]))
 
@@ -28,11 +30,18 @@
         (select-path-dom (aget children index) rest-path)))))
 
 (defn glow-red [node]
-  (set! (.-backgroundColor (.-style node)) "rgba(225,101,98,0.5)")
-  (set! (.-border (.-style node)) "1px solid rgb(225,101,98)")
-  (js/setTimeout
-   (fn [] (set! (.-backgroundColor (.-style node)) "")
-     (set! (.-border (.-style node)) "")) 1000))
+  (let [white (array 255 255 255)
+        color (array 188 237 128)
+        anim (domfx/BgColorTransform. node white color 500)]
+    (gevents/listen anim goog/fx.Transition.EventType.END
+                    (fn []
+                      (.play (domfx/BgColorTransform. node color white 500))))
+    (.play anim)))
+
+
+(defn ->vec
+  [x]
+  (js->clj (.call js/Array.prototype.slice x)))
 
 
 (defn- propagate-dom-change
@@ -40,45 +49,40 @@
            | [:att    path attr-name attr-value]
            | [rem-att path attr-name]"
   [deltas base-el]
-  (let [created-els (atom [])] ;;<-- TODO: recur
-    (.log js/console "v----------- Delta Application -----------v")
+  (let [rm-paths (atom [])
+        sel-path-dom (memoize (partial select-path-dom base-el))
+        get-children (memoize (fn [node] (->vec (.-childNodes node))))]
     (doseq [[typ path a b :as delta] deltas]
-      (let [node (select-path-dom base-el path)]
-        (prn-log (str "DELTA:" (prn-str delta)))
-        (.log js/console node)
+      (let [node (sel-path-dom path)]
+        ;(prn-log (str "DELTA:" (prn-str delta)))
+        ;(.log js/console node)
         (case typ
           :html
           (set! (.-innerHTML node) (hiccups/html a))
-
-          :html-child   ;;targeted in-place update
-          (do
-            (cond (or (nil? a) (string? a))
-                  (gdom/replaceNode (gdom/createTextNode a) (aget (.-childNodes node) b))
-
-                  :else
-                  (gdom/replaceNode (crate/html a) (aget (.-childNodes node) b)))
-            (swap! created-els (partial cons path)))
-
-          :html-children
-          (do
-            (if (empty? (filter #(= path %) @created-els))
-              ;;if wrapper element hasn't already been created
-              (set! (.-innerHTML node) (hiccups/html a))
-
-              ;;otherwise, append child to the wrapper element
-              (let [el (crate/html a)]
-                (gdom/append  node el)))
-            (swap! created-els (partial cons path)))
 
           :att
           (.setAttribute node (name a) (str b))
 
           :rem-att
-          (.removeAttribute node (name a)))
+          (.removeAttribute node (name a))
+
+          :append
+          (gdom/append node (crate/html a))
+
+          :remove
+          (gdom/removeNode (get (get-children node) b))
+
+          :swap
+          (gdom/replaceNode (crate/html a) node)
+
+          :nodeValue
+          ;;(set! (.-nodeValue node) a)
+          (gdom/setTextContent node a))
 
         ;;glow affected node red for a while
-        (if (gdom/isElement node) (glow-red node))))
-    (.log js/console "^----------- Delta Application -----------^")))
+        (if (gdom/isElement node)
+          (glow-red node)
+          (some-> node .-parentNode glow-red))))))
 
 
 (defn- gendom
@@ -88,10 +92,9 @@
   (swap! dom-edn
          (fn [old-dom]
            (propagate-dom-change
-            (html-delta  old-dom new-dom [] 0)
+            (html-delta old-dom new-dom [] 0)
             base-el)
            new-dom)))
-
 
 ;; util
 

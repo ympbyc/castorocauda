@@ -12,12 +12,12 @@
    [:input#a-in {:type "text"}] " + "
    [:input#b-in {:type "text"}]
    " = " (str result)
-   (if (> result 5) [:div
-                [:a {:href "..."} "clojure"]
-                [:p "5以上 (" (str result) ")"]
-                "A wild TextNode appears"
-                [:p "OK"]]
-       [:div "5以下"])])
+   (if (> result 5)
+     (list [:a {:href "..."} "clojure"]
+           [:p (str "5以上 (" result ")")]
+           "A wild TextNode appears"
+           [:p "OK"])
+     [:div "5以下"])])
 
 
 (defn val-stream
