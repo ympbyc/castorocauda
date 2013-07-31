@@ -9,11 +9,12 @@
                    :or   {a 0, b 0, result 0}}]
   [:div#example-app
    [:h1 (str a "+" b "=" result)]
-   [:input#a-in {:value a}]
-   [:input#b-in {:value b}]
+   [:input#a-in {:type "text"}] " + "
+   [:input#b-in {:type "text"}]
+   " = " (str result)
    (if (> result 5) [:div
                 [:a {:href "..."} "clojure"]
-                [:p "5以上"]
+                [:p "5以上 (" (str result) ")"]
                 "A wild TextNode appears"
                 [:p "OK"]]
        [:div "5以下"])])

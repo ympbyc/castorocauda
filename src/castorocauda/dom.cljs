@@ -1,7 +1,9 @@
 (ns castorocauda.dom
   (:require [castorocauda.html :refer [html-delta wrap-tags]]
+            [crate.core :as crate]
+            [goog.dom :as gdom]
             [hiccups.runtime :as hiccupsrt])
-  (:require-macros [hiccups.core :as hics]))
+  (:require-macros [hiccups.core :as hiccups]))
 
 
 (defn prn-log
@@ -25,6 +27,12 @@
         (do (.log js/console "fmm...") start-el)
         (select-path-dom (aget children index) rest-path)))))
 
+(defn glow-red [node]
+  (set! (.-backgroundColor (.-style node)) "rgba(225,101,98,0.5)")
+  (set! (.-border (.-style node)) "1px solid rgb(225,101,98)")
+  (js/setTimeout
+   (fn [] (set! (.-backgroundColor (.-style node)) "")
+     (set! (.-border (.-style node)) "")) 1000))
 
 
 (defn- propagate-dom-change
@@ -33,37 +41,44 @@
            | [rem-att path attr-name]"
   [deltas base-el]
   (let [created-els (atom [])] ;;<-- TODO: recur
+    (.log js/console "v----------- Delta Application -----------v")
     (doseq [[typ path a b :as delta] deltas]
-      ;;(prn-log (str "DELTA: " delta))
-      ;;(prn-log (->> (wrap-tags a) (drop 1) first))
-      ;;(prn-log path)
-      (let [path (rest path)
-            node (select-path-dom base-el path)]
+      (let [node (select-path-dom base-el path)]
+        (prn-log (str "DELTA:" (prn-str delta)))
         (.log js/console node)
-        (prn-log delta)
         (case typ
           :html
-          (set! (.-innerHTML node) (hics/html (->> (wrap-tags a) (drop 1) first)))
+          (set! (.-innerHTML node) (hiccups/html a))
 
-          :child-html
+          :html-child   ;;targeted in-place update
+          (do
+            (cond (or (nil? a) (string? a))
+                  (gdom/replaceNode (gdom/createTextNode a) (aget (.-childNodes node) b))
+
+                  :else
+                  (gdom/replaceNode (crate/html a) (aget (.-childNodes node) b)))
+            (swap! created-els (partial cons path)))
+
+          :html-children
           (do
             (if (empty? (filter #(= path %) @created-els))
               ;;if wrapper element hasn't already been created
-              (set! (.-innerHTML node) (hics/html (wrap-tags a)))
+              (set! (.-innerHTML node) (hiccups/html a))
 
               ;;otherwise, append child to the wrapper element
-              (let [w-node   (aget (.-childNodes node) 0)         ;;the wrapper
-                    html-str (hics/html (wrap-tags a))
-                    doc      (.parseFromString (js/DOMParser.) html-str "application/xml")]
-                (.appendChild w-node
-                              (.-firstChild doc))))
+              (let [el (crate/html a)]
+                (gdom/append  node el)))
             (swap! created-els (partial cons path)))
 
           :att
           (.setAttribute node (name a) (str b))
 
           :rem-att
-          (.removeAttribute node (name a)))))))
+          (.removeAttribute node (name a)))
+
+        ;;glow affected node red for a while
+        (if (gdom/isElement node) (glow-red node))))
+    (.log js/console "^----------- Delta Application -----------^")))
 
 
 (defn- gendom

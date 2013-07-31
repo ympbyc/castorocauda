@@ -37,39 +37,59 @@
   {:tag   tag
    :index n})
 
+
+(defn merge-strings
+  "Group adjoining strings. This corresponds to browsers' behaviour."
+  [lst]
+  (if-let [[x & more] lst]
+    (if-let [[y & more] more]
+      (if (and (string? x) (string? y))
+        (merge-strings (cons (str x y) more))
+        (cons x (merge-strings (cons y more))))
+      lst)
+    lst))
+
+(defn normalize
+  [el]
+  (let [[tg at & chs] el
+        [at chs]      (if (map? at) [at chs] [{}  (cons at chs)])
+        chs           (merge-strings chs)]
+    (concat [tg at] chs)))
+
+
 (declare delta-dive)
 
 (defn html-delta
   "Hiccup * Hiccup * [Path] * Int -> [Delta]
    where type Delta = [typ path att-name val]"
   [old-dom new-dom path n]
-  (let [[tg1 at1 & chs1] old-dom
-        [tg2 at2 & chs2] new-dom
-        cur-path  (conj path (mk-path :div.castorocauda-wrap n))
-        next-path (conj cur-path (mk-path tg2 0))
-
-        ;; attributes can be ommited
-        [at1 chs1] (if (map? at1) [at1 chs1] [{}  (cons at1 chs1)])
-        [at2 chs2] (if (map? at2) [at2 chs2] [{}  (cons at2 chs2)])]
+  (let [[tg1 at1 & chs1] (normalize old-dom)
+        [tg2 at2 & chs2] (normalize new-dom)
+        next-path (conj path (mk-path tg2 n))]
     (cond
      (= new-dom old-dom)
      '()
 
-     (or (not (coll? new-dom))
-         (not (coll? old-dom)))
-     ;;new-dom is TextNode and -> update-parent
-     ;;new-dom is element and old one was TextNode -> update parent
-     (list [:child-html path new-dom nil])
+
+     (nil? old-dom) ;No corresponding node is present
+     (list [:html-children path new-dom nil])
 
 
-     (empty? new-dom)
-     (list [:html cur-path nil nil])
+     (or (not (coll? old-dom))
+         (not (coll? new-dom)))
+     ;;Update the node at corresponding position in-place
+     (list [:html-child path new-dom n])
 
-     (empty? old-dom)
-     (list [:html cur-path new-dom nil])
+
+     (empty? new-dom) ;the content of the parent will be erased
+     (list [:html path '() nil])
+
+     (empty? old-dom) ;was empty, now not
+     (list [:html path new-dom nil])
+
 
      (not= tg1 tg2)
-     (list [:html cur-path new-dom nil])
+     (list [:html path new-dom nil])
 
      (not= at1 at2)
      (concat (attr-diffs at1 at2 next-path)
@@ -96,8 +116,11 @@
         [attrs children] (if (map? attrs) [attrs children] [{} (cons attrs children)])]
     (cond
      (not (coll? dom))
-     [:div.castorocauda-wrap dom]
+     dom ;[:div.castorocauda-wrap dom]
 
      :else
-     [:div.castorocauda-wrap
-      [tag attrs (map wrap-tags children)]])))
+     [tag attrs (map wrap-tags children)])))
+
+
+     (comment [:div.castorocauda-wrap
+       [tag attrs (map wrap-tags children)]])
