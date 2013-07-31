@@ -29,7 +29,7 @@
         (do (.log js/console "fmm...") start-el)
         (select-path-dom (aget children index) rest-path)))))
 
-(defn glow-red [node]
+(defn glow [node]
   (let [white (array 255 255 255)
         color (array 188 237 128)
         anim (domfx/BgColorTransform. node white color 500)]
@@ -81,8 +81,8 @@
 
         ;;glow affected node red for a while
         (if (gdom/isElement node)
-          (glow-red node)
-          (some-> node .-parentNode glow-red))))))
+          (glow node)
+          (some-> node .-parentNode glow))))))
 
 
 (defn- gendom

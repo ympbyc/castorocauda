@@ -24,8 +24,6 @@
 
 
 (qtest "attr-diffs"
-       (.log js/console (clj->js (attr-diffs {:text "hello" :arr [1 2 3]}
-                                             {:text "rrr"   :arr [2 3 4]} [:x])))
        (ok (all-contained
             (attr-diffs {:text "hello" :arr [1 2 3]}
                         {:text "rrr"   :arr [2 3 4]} [:x])

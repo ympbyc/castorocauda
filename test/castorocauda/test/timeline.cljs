@@ -130,7 +130,6 @@
  (let [tl1
        (tl-map #(.-innerHTML (.-target %))
                (dom-events (q-select "#click-test") "click"))]
-   (tl-map #(.log js/console %) tl1)
    (.click (q-select "#click-test"))
    (.click (q-select "#click-test"))
    (.click (q-select "#click-test"))
