@@ -4,16 +4,16 @@
 
 ## Introduction
 
-Castorocauda is a descendent of [WebFUI](http://d3j5vwomefv46c.cloudfront.net/photos/large/795746565.jpg) -  a client side web application framework that free us from manual DOM mutation and the scattering of local state. Castorocauda inherits the State->EDN->DOM mechanics with improvements that keep DOM mutation at minimum. Castorocauda dropped the dom-watching plugin mechanism and delegated their role to FRP streams.
+Castorocauda is a descendent of [WebFUI](http://d3j5vwomefv46c.cloudfront.net/photos/large/795746565.jpg) -  a client side web application framework that free us from manual DOM mutation and the scattering of local state. Castorocauda inherits from WebFUI the State->EDN->DOM mechanics with improvements that keep DOM mutation at minimum. Castorocauda dropped the dom-watching plugin mechanics and delegated their roles to FRP streams.
 
-Castorocauda is purposely not a framework. It is a library, a collection of comporsable functions. Unlike WebFUI, apps created using Castotocauda don't need to be singletons. There is no inversion of controls so you have the full control of your app at any given point in its execution.
+Castorocauda is purposely not a framework. It is a library, a collection of comporsable functions. Unlike WebFUI, apps created using Castotocauda don't need to be singletons. There is no inversion of control so you have the full control of your app at any given point in its execution.
 
 ## Installation
 
-...
+[TO BE WRITTEN]
 
 
-## Running Testsuit
+## Running the Test Suit
 
 Castorocauda.html and Castorocauda.timeline are fully tested. You need to run `lein cljsbuild once` to build /resources/public/js/tests.js before running the tests in the browser. Once that's done open test.html to see how it goes.
 
@@ -46,6 +46,7 @@ Here is an entire concrete example program using Castorocauda. It displays two e
         [castorocauda.dom :only [dom-ready q-select]]
         [castorocauda.timeline :only [tl-map tl-filter tl-merge dom-events]]))
 
+
 (defn render-all
   "Map a snapshot of the app's state to an EDN representing DOM"
   [{:keys [a b result]
@@ -58,6 +59,7 @@ Here is an entire concrete example program using Castorocauda. It displays two e
     [:span (if (even? result) "even" "odd")]]])
 
 
+
 (defn val-timeline
   "Watch el for keyup and extract integer value from it"
   [el]
@@ -65,6 +67,7 @@ Here is an entire concrete example program using Castorocauda. It displays two e
        (tl-map #(->> % .-target .-value js/parseInt))  ;;timeline of values
        (tl-filter (comp not js/isNaN))                 ;;reject invalid values
        ))
+
 
 (defn main
   "launch-app takes:
@@ -80,6 +83,7 @@ Here is an entire concrete example program using Castorocauda. It displays two e
         :result (tl-merge + a-tl b-tl)})
     render-all
     (q-select "#add-two-numbers-widget")))
+
 
 (dom-ready main)
 ```
