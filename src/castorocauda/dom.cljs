@@ -18,16 +18,16 @@
 
 
 (defn- select-path-dom
-  "start-el :: HTMLElement
-   path :: [{:index Int :tag Keyword}]
-   -> HTMLElement"
+  "`HTMLElement`
+   -> `[{:index Int :tag Keyword}]`
+   -> `HTMLElement`"
   [start-el [{:keys [tag index]} & rest-path :as path]]
   (if (empty? path)
     start-el
     (let [children (.-childNodes start-el)]
-      (if (< (.-length children) 1)
-        (do (.log js/console "fmm...") start-el)
-        (select-path-dom (aget children index) rest-path)))))
+      (assert (> (.-length children) 0))
+      (select-path-dom (aget children index) rest-path))))
+
 
 (defn glow [node]
   (let [white (array 255 255 255)
@@ -43,9 +43,13 @@
 
 
 (defn- propagate-dom-change
-  "deltas :: [:html   path hiccup nil]
-           | [:att    path attr-name attr-value]
-           | [rem-att path attr-name]"
+  "deltas :: `[:html    path hiccup nil]`
+           | `[:att     path attr-name attr-value]`
+           | `[:rem-att path attr-name]`
+           | `[:append  path hiccup nil]`
+           | `[:remove  path nil index]`
+           | `[:swap    path hiccup nil]`
+           | `[:nodeValue path String nil]`"
   [deltas base-el]
   (let [rm-paths (atom [])
         sel-path-dom (memoize (partial select-path-dom base-el))
@@ -84,8 +88,8 @@
 
 
 (defn- gendom
-  "new-dom :: hiccup
-   base-el :: HTMLElement"
+  "new-dom :: `hiccup`,
+   base-el :: `HTMLElement`"
   [new-dom base-el]
   (swap! dom-edn
          (fn [old-dom]
