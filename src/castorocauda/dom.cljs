@@ -39,9 +39,7 @@
     (.play anim)))
 
 
-(defn ->vec
-  [x]
-  (js->clj (.call js/Array.prototype.slice x)))
+(def ->vec (comp js->clj goog.array.toArray))
 
 
 (defn- propagate-dom-change
@@ -95,18 +93,3 @@
             (html-delta old-dom new-dom [] 0)
             base-el)
            new-dom)))
-
-;; util
-
-;;todo separate file
-
-
-(defn dom-ready [fun]
-  (set! (.-onload js/window) fun))
-
-(defn q-select [q]
-  (.querySelector js/document q))
-
-
-(defn q-select-all [q]
-  (.querySelectorAll js/document q))

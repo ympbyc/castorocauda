@@ -1,6 +1,6 @@
 (ns castorocauda.example
   (:require [castorocauda.core :as castorocauda])
-  (:use [castorocauda.dom  :only [dom-ready q-select]]
+  (:use [castorocauda.util  :only [dom-ready q-select]]
         [castorocauda.timeline :only [tl-map tl-filter tl-merge dom-events]])
   (:use-macros [castorocauda.macros :only [run-app]]))
 
@@ -19,6 +19,15 @@
            [:p "OK"])
      [:div "5以下"])])
 
+(defn render-all2 [{:keys [a b result]
+                    :or   {a 0, b 0, result 0}}]
+  [:div
+   [:h2 (str a " + " b " = " result)]
+   [:input#a-in {:type "number"}] " + "
+   [:input#b-in {:type "number"}] " = " (str result)
+   [:p "the result is "
+    [:span (if (even? result) "even" "odd")]]])
+
 
 (defn val-stream
   [el]
@@ -36,7 +45,7 @@
      {:a      a-stream
       :b      b-stream
       :result (tl-filter identity (tl-merge + a-stream b-stream))})
-   render-all
+   render-all2
    (q-select "#castorocauda")))
 
 
