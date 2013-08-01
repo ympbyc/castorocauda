@@ -15,8 +15,8 @@
    [:p "the result is "
     [:span (if (even? result) "even" "odd")]]
    (if (< result 5)
-     [:div [:p "result is greater than 5"]]
-     (list [:p "result is less than 5"]
+     [:div [:p {:style {:color "red"}} "result is less than 5"]]
+     (list [:p {:style {:color "red"}} "result is greater than 5"]
            [:p "..."]))])
 
 

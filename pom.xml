@@ -4,7 +4,7 @@
   <groupId>castorocauda</groupId>
   <artifactId>castorocauda</artifactId>
   <packaging>jar</packaging>
-  <version>0.0.2</version>
+  <version>0.0.4</version>
   <name>castorocauda</name>
   <description>Castorocauda is a clone of WebFUI with radical changes in its internal - All castorocauda source included in this repository release under Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)</description>
   <url>http://changeme.example.com</url>
@@ -17,7 +17,7 @@
   <scm>
     <connection>scm:git:git://github.com/ympbyc/castorocauda.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/ympbyc/castorocauda.git</developerConnection>
-    <tag>1af0c76b5ee057ff3f39055a8eb76bd32ab0299d</tag>
+    <tag>7b5d5fa6f0841edc94a82d41d1d0e1941f607676</tag>
     <url>https://github.com/ympbyc/castorocauda</url>
   </scm>
   <build>
