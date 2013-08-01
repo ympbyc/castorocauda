@@ -1,4 +1,0 @@
-(swap! (atom 1) inc)
-(def- x 5)
-(def x 5)
-(defn- foo [] 5)
