@@ -43,8 +43,8 @@ Here is an entire concrete example program using Castorocauda. It displays two e
 ```clojure
 (ns add-two-numbers.core
   (:use [castorocauda.core :only [castorocauda]]
-        [castorocauda.dom :only [dom-ready q-select]]
-        [castorocauda.timeline :only [tl-map tl-filter tl-merge dom-events]]))
+        [castorocauda.dom :only [dom-ready q-select dom-element-events]]
+        [castorocauda.timeline :only [tl-map tl-filter tl-merge]]))
 
 
 (defn render-all
@@ -63,7 +63,7 @@ Here is an entire concrete example program using Castorocauda. It displays two e
 (defn val-timeline
   "Watch el for keyup and extract integer value from it"
   [el]
-  (->> (dom-events el "keyup")                         ;;timeline of keyup
+  (->> (dom-element-events el "keyup")                         ;;timeline of keyup
        (tl-map #(->> % .-target .-value js/parseInt))  ;;timeline of values
        (tl-filter (comp not js/isNaN))                 ;;reject invalid values
        ))
