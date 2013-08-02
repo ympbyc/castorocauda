@@ -68,12 +68,17 @@
   [el]
   (let [[tg at & chs] el
         [at chs]      (cond (map? at) [at chs]
-                            (nil? at) [{} chs]
+                            (or (empty? at))   [{} chs]
+                            (and (seq? at) (empty? chs)) [{} at] ;;list at att position
                             :else     [{}  (cons at chs)])
-        [tg chs]      (if (keyword? tg) [tg chs] [:span.ca-text-node (cons tg chs)])
+        [tg chs]      (if (keyword? tg) [tg chs] [:_TextNode (cons tg chs)])
         chs           (merge-strings chs)
         chs           (reduce flatten-children '() chs)]
     [tg at chs]))
+
+
+(defn invalid? [x]
+  (or (nil? x) (and (coll? x) (empty? x))))
 
 
 (declare delta-dive)
@@ -83,10 +88,11 @@
    where type Delta = [typ path att-name val]"
   [old-dom new-dom path n]
   (cond
-   (nil? old-dom)
-   (list [:append path new-dom nil])
+   (invalid? old-dom)
+   (let [[tg at chs] (normalize new-dom)]
+     (list [:append path [tg at (map normalize chs)] nil]))
 
-   (nil? new-dom)
+   (invalid? new-dom)
    (list [:remove path nil n])
 
    :else
@@ -97,11 +103,11 @@
       (= new-dom old-dom)
       '()
 
-      (= tg1 tg2 :span.ca-text-node)
+      (= tg1 tg2 :_TextNode)
       (list [:nodeValue next-path (first chs2) nil])
 
-      (= tg2 :span.ca-text-node) ;only the new-dom is textnode
-      (list [:swap next-path new-dom nil])
+      (= tg2 :_TextNode) ;only the new-dom is textnode
+      (list [:swap next-path (first chs2) nil])
 
       (not= tg1 tg2)
       (list [:swap next-path [tg2 at2 (map normalize chs2)] nil])

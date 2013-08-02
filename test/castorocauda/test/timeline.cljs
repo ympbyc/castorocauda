@@ -1,8 +1,8 @@
 (ns test.timeline
   (:use [castorocauda.timeline :only [->timeline timeline tl-deref tl-cons! sync-tl
-                                      tl-map tl-merge tl-filter
+                                      tl-map tl-merge tl-filter tl-apply tl-lift tl-of-take
                                       dom-events]]
-        [castorocauda.dom :only [q-select]]
+        [castorocauda.util :only [q-select]]
         [test.test :only [prn= de ok prn-log]])
   (:use-macros [test.test-macro :only [qtest]]))
 
@@ -51,7 +51,7 @@
 
  (let [tl1 (timeline)
        tl2 (timeline)]
-   (prn= (sync-tl identity tl1 tl2) nil "sync-tl yields nil")
+   (prn= (sync-tl first tl1 tl2) nil "sync-tl yields nil")
    (tl-cons! 2 tl1)
    (tl-cons! "hello" tl1)
    (prn= (tl-deref tl1) '("hello" 2) "tl1 is modified")
@@ -60,7 +60,7 @@
 
  (let [tl1 (timeline)
        tl2 (timeline)]
-   (sync-tl identity tl1 tl2 even?)
+   (sync-tl first tl1 tl2 even?)
    (->> tl1 (tl-cons! 1) (tl-cons! 2) (tl-cons! 3) (tl-cons! 4))
    (prn= (tl-deref tl1) '(4 3 2 1) "tl1 has all four items")
    (prn= (tl-deref tl2) '(4 2) "tl2 is synchronized and filtered"))
@@ -68,14 +68,14 @@
 
  (let [tl1 (timeline)
        tl2 (timeline)]
-   (sync-tl inc tl1 tl2)
+   (sync-tl (comp inc first) tl1 tl2)
    (->> tl1 (tl-cons! 1) (tl-cons! 2) (tl-cons! 3) (tl-cons! 4))
    (prn= (tl-deref tl1) '(4 3 2 1) "tl1 has all four items unmodified")
    (prn= (tl-deref tl2) '(5 4 3 2) "tl2 is synchronized and f is applied to every item"))
 
  (let [tl1 (timeline)
        tl2 (timeline)]
-   (sync-tl inc tl1 tl2 odd?)
+   (sync-tl (comp inc first) tl1 tl2 odd?)
    (->> tl1 (tl-cons! 1) (tl-cons! 2) (tl-cons! 3) (tl-cons! 4))
    (prn= (tl-deref tl1) '(4 3 2 1) "tl1 has all four items unmodified")
    (prn= (tl-deref tl2) '(4 2)
@@ -122,6 +122,40 @@
    (tl-cons! 9 tl1)
    (prn= (tl-deref tl2) '(2 2 4 6 8)
          "don't change if the value fail filter fn")))
+
+
+(defn test-lift-take
+  "Run the same set of tests with entangled timelines created in various ways."
+  [tl1 tl2]
+  (prn= (->> tl2 tl-deref) '((5 4 3))
+        "tl-take returns a timeline with `take` applied on its stream")
+  (tl-cons! 6 tl1)
+  (prn= (->> tl2 tl-deref first) '(6 5 4) "`take` gets applied to new stream in tl")
+  (tl-cons! 7 tl1)
+  (tl-cons! 8 tl1)
+  (prn= (->> tl2 tl-deref first) '(8 7 6) "`take` gets applied to new stream in tl"))
+
+
+(qtest
+ "tl-apply"
+ (let [tl1 (timeline 5 4 3 2 1)
+       tl2 (tl-apply (partial take 3) tl1)]
+   (test-lift-take tl1 tl2)))
+
+(qtest
+ "tl-lift"
+ (let [f (tl-lift take)
+       tl1 (timeline 5 4 3 2 1)
+       tl2 (f 3 tl1)]
+   (test-lift-take tl1 tl2)))
+
+(qtest
+ "lifted functions"
+ (let [tl1 (timeline 5 4 3 2 1)
+       tl2 (tl-of-take 3 tl1)]
+   (test-lift-take tl1 tl2)))
+
+
 
 
 (qtest
