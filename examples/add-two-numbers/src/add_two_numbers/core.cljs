@@ -31,18 +31,18 @@
 
 (defn main
   "launch-app takes:
-   1. nullary function that produce a map of timelines
+   1. a map of timelines
    2. the render-all function defined above
    3. a HTMLElement that Castorocauda renders its state in"
   []
-  (launch-app
-   #(let [a-tl (val-timeline "#a-in")
-          b-tl (val-timeline "#b-in")]
-       {:a      a-tl
-        :b      b-tl
-        :result (tl-merge + a-tl b-tl)})
-    render-all
-    (q-select "#add-two-numbers-widget")))
+  (let [a-tl (val-timeline "#a-in")
+        b-tl (val-timeline "#b-in")]
+    (launch-app
+     {:a      a-tl
+      :b      b-tl
+      :result (tl-merge + a-tl b-tl)}
+     render-all
+     (q-select "#add-two-numbers-widget"))))
 
 
 (dom-ready main)

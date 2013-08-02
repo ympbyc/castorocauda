@@ -48,13 +48,13 @@
 
 
 (defn main []
-  (launch-app
-   #(let [cells (init-cells 5)
-          cells (apply (partial tl-merge (comp flatten list)) cells)]
-      (tl-map (fn [x] (dorun (prn-log x))) cells)
-      {:cells cells})
-   render-all
-   (q-select "#spreadsheet-widget")))
+  (let [cells (init-cells 5)
+        cells (apply (partial tl-merge (comp flatten list)) cells)]
+    (tl-map (fn [x] (dorun (prn-log x))) cells)
+    (launch-app
+     {:cells cells}
+     render-all
+     (q-select "#spreadsheet-widget"))))
 
 
 (dom-ready main)

@@ -75,14 +75,14 @@ Here is an entire concrete example program using Castorocauda. It displays two e
    2. the render-all function defined above
    3. a HTMLElement that Castorocauda renders its state in"
   []
-  (launch-app
-    #(let [a-tl (val-timeline (q-select "#a-in"))
-           b-tl (val-timeline (q-select "#b-in))]
-       {:a      a-tl
-        :b      b-tl
-        :result (tl-merge + a-tl b-tl)})
-    render-all
-    (q-select "#add-two-numbers-widget")))
+  (let [a-tl (val-timeline (q-select "#a-in"))
+        b-tl (val-timeline (q-select "#b-in))]
+    (launch-app
+        {:a      a-tl
+         :b      b-tl
+         :result (tl-merge + a-tl b-tl)}
+      render-all
+      (q-select "#add-two-numbers-widget"))))
 
 
 (dom-ready main)
