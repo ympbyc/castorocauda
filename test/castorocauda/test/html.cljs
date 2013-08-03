@@ -88,11 +88,11 @@
 
 (qtest "html-delta"
        (de (html-delta nil [:div "aaa"] [{:tag :div :index 0}] 0)
-           '([:append [{:tag :div :index 0}] [:div "aaa"] nil])
+           `([:append [{:tag :div :index 0}] [:div {} (~(normalize "aaa"))] nil])
            "append to parent node if old children were not as many as new children")
 
        (de (html-delta '() [:div "aaa"] [{:tag :div :index 0}] 0)
-           '([:append [{:tag :div :index 0}] [:div "aaa"] nil])
+           `([:append [{:tag :div :index 0}] [:div {} (~(normalize "aaa"))] nil])
            "empty collection is treated the same as nil")
 
        (de (html-delta [:div "aaa"] nil [{:tag :div :index 0}] 5)
@@ -131,8 +131,8 @@
 
        (de (html-delta [:div#top [:p] [:b {:x 2} "old-" "b"]]
                        [:div#top [:p] [:i {:x 5} "new-" "i"]] []  0)
-           '([:swap [{:tag :div#top :index 0} {:tag :i :index 1}]
-              [:i {:x 5} ("new-i")]
+           `([:swap [{:tag :div#top :index 0} {:tag :i :index 1}]
+              [:i {:x 5} (~(normalize "new-i"))]
               nil])
            "swap if tag differ.")
 
