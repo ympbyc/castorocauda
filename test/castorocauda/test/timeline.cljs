@@ -1,8 +1,7 @@
 (ns test.timeline
   (:use [castorocauda.timeline :only [->timeline timeline tl-deref tl-cons! sync-tl
-                                      tl-map tl-merge tl-filter tl-apply tl-lift tl-of-take
-                                      dom-events]]
-        [castorocauda.util :only [q-select]]
+                                      tl-map tl-merge tl-filter tl-apply tl-lift tl-of-take]]
+        [castorocauda.util :only [q-select dom-element-events]]
         [test.test :only [prn= de ok prn-log]])
   (:use-macros [test.test-macro :only [qtest]]))
 
@@ -106,7 +105,20 @@
          "new item is added. merge fn use other tl's first val - 1")
    (tl-cons! 9 tl1)
    (prn= (tl-deref tl3) '(13 6 5 5 5 5)
-         "new item is added. merge fn use other tl's first val - 2")))
+         "new item is added. merge fn use other tl's first val - 2"))
+
+  (let [tl1 (timeline 1 2 3 4)
+        tl2 (timeline 5 6 7 8)
+        tl3 (timeline 9 0 1 2)
+        tl4 (tl-merge (fn [& xs] (vec xs)) tl1 tl2 tl3)]
+   (prn= (tl-deref tl4) '([1 5 9] [2 6 0] [3 7 1] [4 8 2])
+         "tl-merge returns a timeline. items are merged using the provided fn")
+   (tl-cons! 2 tl1)
+   (prn= (tl-deref tl4) '([2 5 9] [1 5 9] [2 6 0] [3 7 1] [4 8 2])
+         "new item is added. merge fn use other tl's first val")
+   (tl-cons! 9 tl2)
+   (prn= (tl-deref tl4) '([2 9 9] [2 5 9] [1 5 9] [2 6 0] [3 7 1] [4 8 2])
+         "new item is added. merge fn use other tl's first val")))
 
 
 
@@ -163,7 +175,7 @@
 
  (let [tl1
        (tl-map #(.-innerHTML (.-target %))
-               (dom-events (q-select "#click-test") "click"))]
+               (dom-element-events (q-select "#click-test") "click"))]
    (.click (q-select "#click-test"))
    (.click (q-select "#click-test"))
    (.click (q-select "#click-test"))

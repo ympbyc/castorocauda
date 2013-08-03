@@ -45,27 +45,20 @@
    Unlike core/map this fn only takes one timeline."
   [f src-tl]
   (let [dst-tl (->> src-tl tl-deref (map f) ->timeline)]
-    (sync-tl (comp f first)src-tl dst-tl)
+    (sync-tl (comp f first) src-tl dst-tl)
     dst-tl))
 
-
-(defn- tl-merge-2
-  "Helper for merge-timeline. Does the actual work of merging."
-  [f s1 s2]
-  (let [dst-tl (->> (map f (tl-deref s1) (tl-deref s2)) ->timeline)]
-    (sync-tl (fn [new-s] (f (first new-s) (first (tl-deref s2))))
-             s1 dst-tl)
-    (sync-tl (fn [new-s] (f (first (tl-deref s1)) (first new-s)))
-             s2 dst-tl)
-    dst-tl))
 
 (defn tl-merge
   "Create a new timeline by merging one or more timelines
    into one stream using the given function."
-  [f source & sources]
-  (reduce (fn [strm src]
-            (tl-merge-2 f strm src))
-          source sources))
+  [f & sources]
+  (let [dst-tl (->> (apply (partial map f) (map tl-deref sources))
+                    ->timeline)]
+    (doseq [src-tl sources]
+      (sync-tl #(apply f (map (comp first tl-deref) sources))
+               src-tl dst-tl))
+    dst-tl))
 
 
 (defn tl-filter
