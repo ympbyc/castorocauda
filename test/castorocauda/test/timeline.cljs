@@ -175,7 +175,7 @@
 
  (let [tl1
        (tl-map #(.-innerHTML (.-target %))
-               (dom-element-events (q-select "#click-test") "click"))]
+               (dom-element-events "click" (q-select "#click-test")))]
    (.click (q-select "#click-test"))
    (.click (q-select "#click-test"))
    (.click (q-select "#click-test"))

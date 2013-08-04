@@ -123,7 +123,7 @@
 
        (de (html-delta [:div#top [:p "old-p"]]
                        [:div#top "new-textnode"] [] 0)
-           '([:swap [{:tag :div#top :index 0} {:tag :_TextNode :index 0}]
+           '([:swap [{:tag :div :index 0} {:tag :_TextNode :index 0}]
              "new-textnode"
               nil])
            "swap the old element with new textnode")
@@ -131,7 +131,7 @@
 
        (de (html-delta [:div#top [:p] [:b {:x 2} "old-" "b"]]
                        [:div#top [:p] [:i {:x 5} "new-" "i"]] []  0)
-           `([:swap [{:tag :div#top :index 0} {:tag :i :index 1}]
+           `([:swap [{:tag :div :index 0} {:tag :i :index 1}]
               [:i {:x 5} (~(normalize "new-i"))]
               nil])
            "swap if tag differ.")
@@ -139,6 +139,14 @@
 
        (de (html-delta [:div#top [:p] [:div [:input {:value 5}]]]
                        [:div#top [:p] [:div [:input {:value 6}]]] [] 0)
-           '([:att [{:tag :div#top :index 0} {:tag :div :index 1} {:tag :input :index 0}]
+           '([:att [{:tag :div :index 0} {:tag :div :index 1} {:tag :input :index 0}]
               :value 6])
-           "Attribute difference"))
+           "Attribute difference")
+
+       (all-contained
+        (html-delta [:div [:p#aa.bb "aaa"]]
+                    [:div [:p#cc.dd "aaa"]] [] 0)
+        #{[:att [{:tag :div :index 0} {:tag :p :index 0}]
+           :class " dd"]
+          [:att [{:tag :div :index 0} {:tag :p :index 0}]
+           :id "cc"]}))

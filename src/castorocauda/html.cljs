@@ -1,4 +1,5 @@
-(ns castorocauda.html)
+(ns castorocauda.html
+  (:require [clojure.string :as cstring]))
 
 (defn prn-log
   [x]
@@ -45,7 +46,7 @@
      (let [[_ name _ id classes] (re-matches #"^([^.^#]+)(#([^.]+))?(\..+)?" tagname)
            attrs {}
            attrs (if classes
-                   (assoc attrs :class (clojure.string/replace classes #"\." " "))
+                   (assoc attrs :class (cstring/replace classes #"\." " "))
                    attrs)
            attrs (if id (assoc attrs :id (str id)) attrs)]
        {:tag   (keyword name)

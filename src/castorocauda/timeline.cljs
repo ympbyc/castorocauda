@@ -1,7 +1,16 @@
 (ns castorocauda.timeline)
 
+;;;; timeline.cljs
+;;;; A Deadly Naive Implementation of FRP Stream.
+;;;; It leaks every memory you allocate for it because it is basically a cons-only seq
 
-(defrecord Timeline [stream])
+(declare tl-now)
+
+(defrecord Timeline [stream]
+  ;;  Object
+  ;; (toString [x]
+  ;;    (tl-now x))
+  )
 
 
 (defn ->timeline
@@ -9,7 +18,7 @@
   (->Timeline (atom (seq xs))))
 
 (defn timeline
-  "Create a timeline. A timeline is just an atom of seq."
+  "Create a timeline. A timeline is an atom of seq wrapped in a record."
   ([] (->Timeline (atom '())))
   ([& xs]
      (->> xs seq ->timeline)))
@@ -17,12 +26,13 @@
 
 (def timeline? (partial instance? Timeline))
 
+
 (defn tl-deref [tl]
+  "Dereference a seq from the timeline"
   (->> tl :stream deref))
 
 
-(defn tl-now [tl]
-  (->> tl tl-deref first))
+(def tl-now (comp first tl-deref))
 
 
 (defn tl-cons!
@@ -31,6 +41,8 @@
   (swap! (:stream tl) (partial cons x))
   tl)
 
+
+
 (defn- sync-tl-
   [f src-tl dst-tl pred]
   (add-watch (:stream src-tl) (gensym)
@@ -38,6 +50,7 @@
                (when (pred x)
                  (tl-cons! (f ns) dst-tl))))
   nil)
+
 
 (defn- sync-tl
   ([f src-tl dst-tl]
@@ -98,22 +111,23 @@
 
 
 
-;;;; Lifted functions ;;;;;
+;;;; Lifted functions
+;;;; Each function defined below will produces a timeline of streams
 
-(def tl-of-take (tl-lift take))
+(def tl-of-take    (tl-lift take))
 
-(def tl-of-drop (tl-lift take))
+(def tl-of-drop    (tl-lift take))
 
-(def tl-of-reduce (tl-lift reduce))
+(def tl-of-reduce  (tl-lift reduce))
 
-(def tl-of-count (tl-lift count))
+(def tl-of-count   (tl-lift count))
 
-(def tl-of-cons (tl-lift cons))
+(def tl-of-cons    (tl-lift cons))
 
-(def tl-of-concat (tl-lift concat))
+(def tl-of-concat  (tl-lift concat))
 
 (def tl-of-reverse (tl-lift reverse))
 
-(def tl-of-map (tl-lift map))
+(def tl-of-map     (tl-lift map))
 
-(def tl-of-filter (tl-lift filter))
+(def tl-of-filter  (tl-lift filter))
