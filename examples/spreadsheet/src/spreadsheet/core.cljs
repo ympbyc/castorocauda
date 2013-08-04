@@ -2,13 +2,13 @@
   (:require [goog.dom :as gdom])
   (:use [castorocauda.core     :only [launch-app]]
         [castorocauda.util     :only [dom-ready q-select prn-log dom-delegated-events
-                                      dom-element-events q-select-all delayed-fn]]
+                                      dom-element-events q-select-all delayed]]
         [castorocauda.timeline :only [timeline tl-cons! tl-now
                                       tl-map tl-filter tl-merge timeline?]]))
 
 
 (def table-x 3)
-(def table-y 3)
+(def table-y 4)
 
 
 (defn char-from
@@ -20,10 +20,10 @@
 
 (defn render-cell
   "Render a table cell"
-  [y x {:keys [val expr mode] :as cell}]
+  [y x {:keys [val expr mode name] :as cell}]
   (if (= mode :edit)
     [:td.cell-edit [:input.cell-expr {:value (str expr)}]]
-    [:td.cell-static {:data-id (+ (* y table-x) x)} (str expr " = " val)]))
+    [:td.cell-static {:data-id (+ (* y table-x) x) :data-name name} (str expr " = " val)]))
 
 
 (defn render-all
@@ -40,15 +40,15 @@
 
 (defn init-cells
   [x y]
-  (prn-log (char-from "A" x))
+  (doseq [ch (char-from "A" x)]
+    (aset js/window (str ch) (array)))
   (vec (apply concat
-          (for [ch (char-from "A" x)]
+          (for [i (range 0 y)]
             (do
-              (aset js/window (str ch) (array))
-              (vec (for [i (range 0 y)]
-                     (let [cell (timeline {:val 0 :expr "0" :mode :show})]
-                       (aset (aget js/window (str ch)) i cell)
-                       cell))))))))
+              (for [ch (char-from "A" x)]
+                (let [cell (timeline {:val 0 :expr "0" :mode :show :name (str ch i)})]
+                  (aset (aget js/window (str ch)) i cell)
+                  cell)))))))
 
 (defn tl-unit-idempotent
   [x]
@@ -147,7 +147,6 @@
     ;;when clicked on a cell, set the mode of the cell to :edit
     (tl-map
      (fn [e]
-       (.log js/console e)
        (let [cell (get cells (ev-target-attr "data-id" e))]
          (tl-cons!
           (assoc (tl-now cell) :mode :edit)
