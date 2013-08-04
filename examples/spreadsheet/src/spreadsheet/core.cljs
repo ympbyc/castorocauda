@@ -50,15 +50,17 @@
                        (aset (aget js/window (str ch)) i cell)
                        cell))))))))
 
+(defn tl-unit-idempotent
+  [x]
+  (if (timeline? x) x
+      (timeline {:expr x})))
+
 
 (defn js-eval
   [expr]
   (->>
-   (if (timeline? expr)
-      expr
-      (timeline {:expr expr}))
-   js/eval
-   tl-now))
+   expr
+   js/eval))
 
 
 (defn lift-tl-fn
@@ -66,12 +68,8 @@
   [f]
   (fn [& tls]
     (->> tls
-         (map (fn [x]
-                (let [y (js/parseFloat x)]
-                  (if (js/isNaN y) (->> x tl-now :expr js-eval)
-                      y))))
-         (reduce f)
-         (assoc {} :expr))))
+         (map #(->> % tl-unit-idempotent tl-now :expr js-eval))
+         (reduce f))))
 
 
 ;;Builtin operators

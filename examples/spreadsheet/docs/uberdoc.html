@@ -3068,24 +3068,21 @@ net.brehaut.ClojureTools = (function (SH) {
                      (let [cell (timeline {:val 0 :expr &quot;0&quot; :mode :show})]
                        (aset (aget js/window (str ch)) i cell)
                        cell))))))))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defn tl-unit-idempotent
+  [x]
+  (if (timeline? x) x
+      (timeline {:expr x})))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn js-eval
   [expr]
   (-&gt;&gt;
-   (if (timeline? expr)
-      expr
-      (timeline {:expr expr}))
-   js/eval
-   tl-now))</pre></td></tr><tr><td class="docs"><p>Lift an <code>a * a -&gt; a</code> function upto <code>Timeline a * Timeline a * ... -&gt; Timeline a</code> function</p>
+   expr
+   js/eval))</pre></td></tr><tr><td class="docs"><p>Lift an <code>a * a -&gt; a</code> function upto <code>Timeline a * Timeline a * ... -&gt; Timeline a</code> function</p>
 </td><td class="codes"><pre class="brush: clojure">(defn lift-tl-fn
   [f]
   (fn [&amp; tls]
     (-&gt;&gt; tls
-         (map (fn [x]
-                (let [y (js/parseFloat x)]
-                  (if (js/isNaN y) (-&gt;&gt; x tl-now :expr js-eval)
-                      y))))
-         (reduce f)
-         (assoc {} :expr))))</pre></td></tr><tr><td class="docs"><p>Builtin operators</p>
+         (map #(-&gt;&gt; % tl-unit-idempotent tl-now :expr js-eval))
+         (reduce f))))</pre></td></tr><tr><td class="docs"><p>Builtin operators</p>
 </td><td class="codes"><pre class="brush: clojure">(def spreadsheet-fns
   {:add
    (lift-tl-fn +)
