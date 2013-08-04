@@ -1,5 +1,5 @@
-(defproject castorocauda "0.0.4"
-  :description "Castorocauda is a clone of WebFUI with radical changes in its internal - All castorocauda source included in this repository release under Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)"
+(defproject castorocauda "0.0.9"
+  :description "Castorocauda is a client side web development framework-ish library that can be mixed freely with other libraries - All castorocauda source included in this repository release under Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)"
   :url "http://changeme.example.com"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}

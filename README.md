@@ -8,14 +8,13 @@ Castorocauda is a descendent of [WebFUI](http://d3j5vwomefv46c.cloudfront.net/ph
 
 Castorocauda is purposely not a framework. It is a library, a collection of comporsable functions. Unlike WebFUI, apps created using Castotocauda don't need to be singletons. There is no inversion of control so you have the full control of your app at any given point in its execution.
 
-## Installation
+## Artifact
 
-[TO BE WRITTEN]
+Add the following dependency to your project.clj file:
 
-
-## Running the Test Suit
-
-Castorocauda.html and Castorocauda.timeline are fully tested. You need to run `lein cljsbuild once` to build /resources/public/js/tests.js before running the tests in the browser. Once that's done open test.html to see how it goes.
+```
+[castorocauda "0.0.9"]
+```
 
 
 ## A Simple App that Use Castorocauda
@@ -91,6 +90,12 @@ Here's a visualization of DOM elements that gets modified when you type some num
 ![delta static](https://rawgithub.com/ympbyc/castorocauda/rewrite/resources/public/images/castorocauda1.png)
 ![delta gif](https://rawgithub.com/ympbyc/castorocauda/rewrite/resources/public/images/Castorocauda3.gif)
 With new html delta calculator and committer, you can trust that only the smallest possible set of nodes are re-rendered.
+
+
+## Running the Test Suit
+
+Castorocauda.html and Castorocauda.timeline are fully tested. You need to run `lein cljsbuild once` to build /resources/public/js/tests.js before running the tests in the browser. Once that's done open test.html to see how it goes.
+
 
 
 ## License

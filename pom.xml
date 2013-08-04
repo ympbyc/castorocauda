@@ -4,9 +4,9 @@
   <groupId>castorocauda</groupId>
   <artifactId>castorocauda</artifactId>
   <packaging>jar</packaging>
-  <version>0.0.4</version>
+  <version>0.0.9</version>
   <name>castorocauda</name>
-  <description>Castorocauda is a clone of WebFUI with radical changes in its internal - All castorocauda source included in this repository release under Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)</description>
+  <description>Castorocauda is a client side web development framework-ish library that can be mixed freely with other libraries - All castorocauda source included in this repository release under Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)</description>
   <url>http://changeme.example.com</url>
   <licenses>
     <license>
@@ -17,7 +17,7 @@
   <scm>
     <connection>scm:git:git://github.com/ympbyc/castorocauda.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/ympbyc/castorocauda.git</developerConnection>
-    <tag>7b5d5fa6f0841edc94a82d41d1d0e1941f607676</tag>
+    <tag>0888c1d2e12fb238a878de9a4dc601bd1fceba9d</tag>
     <url>https://github.com/ympbyc/castorocauda</url>
   </scm>
   <build>
@@ -73,9 +73,9 @@
       <version>0.2.0</version>
     </dependency>
     <dependency>
-      <groupId>crate</groupId>
-      <artifactId>crate</artifactId>
-      <version>0.2.4</version>
+      <groupId>prismatic</groupId>
+      <artifactId>dommy</artifactId>
+      <version>0.1.1</version>
     </dependency>
   </dependencies>
 </project>
