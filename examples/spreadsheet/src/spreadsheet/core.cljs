@@ -4,69 +4,77 @@
         [castorocauda.util     :only [dom-ready q-select prn-log dom-delegated-events
                                       dom-element-events q-select-all delayed-fn]]
         [castorocauda.timeline :only [timeline tl-cons! tl-now
-                                      tl-map tl-filter tl-merge]]))
+                                      tl-map tl-filter tl-merge timeline?]]))
+
+
+(def table-x 3)
+(def table-y 3)
+
+
+(defn char-from
+  "List `n` charactors successive to `start-char`"
+  [start-char n]
+  (->> (range (.charCodeAt start-char 0) (+ (.charCodeAt start-char 0) n))
+       (map String/fromCharCode)))
 
 
 (defn render-cell
   "Render a table cell"
-  [i {:keys [mode expr val] :as x}]
-  [:tr [:th (str i)]
-   (if (= mode :edit)
-     [:td.cell-edit [:input.cell-expr {:value (str expr)}]]
-     [:td.cell-static {:data-id i} (str expr " = " val)])])
+  [y x {:keys [val expr mode] :as cell}]
+  (if (= mode :edit)
+    [:td.cell-edit [:input.cell-expr {:value (str expr)}]]
+    [:td.cell-static {:data-id (+ (* y table-x) x)} (str expr " = " val)]))
 
 
 (defn render-all
-  [{:keys [cells]}]
-  [:div#spreadsheet-example
-   [:h1 {:style {:font-size "1.3em"}} "Spreadsheet Example"]
-   [:p#description
-    "Click on cells to edit its expression"
-    "Supported functions: "
-    [:span.code "add"]
-    [:span.code "sub"]
-    [:span.code "mul"]
-    [:span.code "div"]]
-   [:table#spreadsheet
-    [:tr [:th ] [:th "A"]]
-    (map-indexed render-cell cells)]])
-
-
-(defn char-from
-  [start-char length]
-  (->> (range (.charCodeAt start-char 0) (+ (.charCodeAt start-char 0) length))
-       (map String/fromCharCode)))
+  "Take a flat list of cells and render a `table-x` * `table-y` table."
+  [{:keys [cells]}]                   ;;cells :: [{} {} {} {}]
+  (let [cellss (partition table-x cells)]   ;;cells :: [[{} {}] [{} {}]]
+    [:div#spreadsheet-example
+     [:table#spreadsheet
+      [:tr [:th ] (map (fn [c] [:th c]) (char-from "A" table-x))]
+      (map
+       (fn [cells y] [:tr [:th (str y)] (map-indexed (partial render-cell y) cells)])
+       cellss (range 0 table-y))]]))
 
 
 (defn init-cells
   [x y]
   (prn-log (char-from "A" x))
-  (into {}
-        (for [ch (char-from "A" x)]
-          (do
-            (aset js/window (str ch) (array))
-            [ch (vec (for [i (range 0 y)]
-                       (let [cell (timeline {:val 0 :expr "0" :mode :show})]
-                         (aset (aget js/window (str ch)) i cell)
-                         cell)))]))))
+  (vec (apply concat
+          (for [ch (char-from "A" x)]
+            (do
+              (aset js/window (str ch) (array))
+              (vec (for [i (range 0 y)]
+                     (let [cell (timeline {:val 0 :expr "0" :mode :show})]
+                       (aset (aget js/window (str ch)) i cell)
+                       cell))))))))
 
 
-(def js-eval
-  (fn [expr] (js/eval expr)))
+(defn js-eval
+  [expr]
+  (->>
+   (if (timeline? expr)
+      expr
+      (timeline {:expr expr}))
+   js/eval
+   tl-now))
 
 
 (defn lift-tl-fn
+  "Lift an `a * a -> a` function upto `Timeline a * Timeline a * ... -> Timeline a` function"
   [f]
   (fn [& tls]
-    (reduce
-     f
-     (map (fn [x]
-            (let [y (js/parseFloat x)]
-              (if (js/isNaN y) (->> x tl-now :expr js-eval)
-                  y)))
-          tls))))
+    (->> tls
+         (map (fn [x]
+                (let [y (js/parseFloat x)]
+                  (if (js/isNaN y) (->> x tl-now :expr js-eval)
+                      y))))
+         (reduce f)
+         (assoc {} :expr))))
 
 
+;;Builtin operators
 (def spreadsheet-fns
   {:add
    (lift-tl-fn +)
@@ -82,11 +90,12 @@
 
 
 (doseq [[fname f] spreadsheet-fns]
-  "make functions available to js"
+  ;;make functions available to js
   (aset js/window (name fname) f))
 
 
 (defn ev-target-attr
+  "Retrieve the target element from an event"
   [attr-name e]
   (.getAttribute (.-target e) attr-name))
 
@@ -98,37 +107,42 @@
    (map-indexed
     (fn [i td]
       (let [x (tl-now (get cells i))]
-        (gdom/replaceNode (gdom/createTextNode (str (:expr x) " = " (js-eval (:expr x))))
+        (gdom/replaceNode (gdom/createTextNode (str (:expr x)
+                                                    " = "
+                                                    (->> x :expr js-eval)))
                           (aget (.-childNodes td) 0))))
     (q-select-all ".cell-static"))))
 
 
-(defn watch-blur [cell cells el]
-  ;;when focus is lost from a cell, set the cell's mode to :show
+(defn watch-blur
+  "When focus is lost from a cell, set the cell's mode to :show.
+   And evaluate the given expression."
+  [cell cells el]
   (.focus el)
   (tl-map
    (fn [e] (tl-cons!
            (assoc (tl-now cell)
              :mode :show
              :expr (.-value el)
-             :val  (js/eval (.-value el)))
+             :val  (->> el .-value js-eval))
            cell)
      (update-awkward cells))
    (dom-element-events "blur" el)))
 
 
-(defn main []
-  (let [cells (get (init-cells 5 5) "A")
+(defn main
+  "The entry point. Init timelines and bind them to the renderer"
+  []
+  (let [cells (init-cells table-x table-y)
         table (apply (partial tl-merge (fn [& xs] (vec xs))) cells)]
     (aset js/window "CELLS" cells)
     (launch-app
      {:cells table}
      render-all
      (q-select "#spreadsheet-widget"))
-    (tl-cons! {:val 0 :expr "0" :mode :show}  (cells 2))
-    (tl-cons! {:val 0 :expr "0" :mode :show} (cells 0))
-    (tl-cons! {:val 0 :expr "0" :mode :show} (cells 1))
-    (tl-cons! {:val 0 :expr "0" :mode :show} (cells 3))
+    (tl-cons! {:val 17 :expr "add(A[0], C[2])" :mode :show} (cells 4))
+    (tl-cons! {:val 9 :expr "9" :mode :show} (cells 0))
+    (tl-cons! {:val 8 :expr "8" :mode :show} (cells 8))
 
 
 
@@ -144,4 +158,5 @@
      (dom-delegated-events "click" ".cell-static"))))
 
 
+;;kickoff
 (dom-ready main)
