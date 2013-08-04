@@ -80,8 +80,11 @@
    [:div {} xxx (yyy) zzz] -> [:div {} (xxx yyy zzz)]
    hello                   -> [:_textNode {} hello]"
   [el]
-  (if (string? el) [:_TextNode {} (list el)]
-      (let [[tg at & chs] el
+  (cond (string? el)
+        [:_TextNode {} (list el)]
+
+        (seq el)
+        (let [[tg at & chs] el
             tg-parsed (parse-tagname tg)
             [at chs]      (cond (map? at) [at chs]
                                 (or (empty? at))   [{} chs]
@@ -90,7 +93,10 @@
             [tg at]       [(:tag tg-parsed) (merge at (:attrs tg-parsed))]
             chs           (merge-strings chs)
             chs           (reduce flatten-children '() chs)]
-        [tg at chs])))
+          [tg at chs])
+
+        :else   ;;e.g. raw number
+        [:_TextNode {} (list (str el))]))
 
 
 (defn invalid? [x]
