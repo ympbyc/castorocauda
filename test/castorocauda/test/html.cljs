@@ -76,18 +76,34 @@
            "merge strings")
 
        (de (normalize "text node sample")
-           [:span.ca-text-node {} '("text node sample")]
-           "TextNodes gets wrapped in a span"))
+           [:_TextNode {} '("text node sample")]
+           "TextNodes are marked with :_TextNode")
+
+       (de (normalize [:foo '(1 2 3)])
+           [:foo {} '(1 2 3)]
+           "If list is at attrs position and children are empty, let the list be children"))
 
 
 
 
 (qtest "html-delta"
        (de (html-delta nil [:div "aaa"] [{:tag :div :index 0}] 0)
-           '([:append [{:tag :div :index 0}] [:div "aaa"] nil])
+           `([:append [{:tag :div :index 0}] [:div {} (~(normalize "aaa"))] nil])
            "append to parent node if old children were not as many as new children")
 
+       (de (html-delta '() [:div "aaa"] [{:tag :div :index 0}] 0)
+           `([:append [{:tag :div :index 0}] [:div {} (~(normalize "aaa"))] nil])
+           "empty collection is treated the same as nil")
+
        (de (html-delta [:div "aaa"] nil [{:tag :div :index 0}] 5)
+           '([:remove [{:tag :div :index 0}] nil 5])
+           "remove old child if there is no longer an element.")
+
+       (de (html-delta [:div "aaa"] '() [{:tag :div :index 0}] 5)
+           '([:remove [{:tag :div :index 0}] nil 5])
+           "remove old child if there is no longer an element.")
+
+       (de (html-delta [:div "aaa"] '() [{:tag :div :index 0}] 5)
            '([:remove [{:tag :div :index 0}] nil 5])
            "remove old child if there is no longer an element.")
 
@@ -101,28 +117,36 @@
        (de (html-delta "hello"
                        "world" [{:tag :div :index 0}] 2)
            '([:nodeValue
-              [{:tag :div :index 0} {:tag :span.ca-text-node :index 2}]
+              [{:tag :div :index 0} {:tag :_TextNode :index 2}]
               "world" nil])
-           "update the textnode (actualy a span) if both new and old are textnode.")
+           "update the textnode if both new and old are textnode.")
 
        (de (html-delta [:div#top [:p "old-p"]]
                        [:div#top "new-textnode"] [] 0)
-           '([:swap [{:tag :div#top :index 0} {:tag :span.ca-text-node :index 0}]
-              [:span.ca-text-node {} ("new-textnode")]
+           '([:swap [{:tag :div :index 0} {:tag :_TextNode :index 0}]
+             "new-textnode"
               nil])
-           "swap the old element with new textnode (actualy a span)")
+           "swap the old element with new textnode")
 
 
        (de (html-delta [:div#top [:p] [:b {:x 2} "old-" "b"]]
                        [:div#top [:p] [:i {:x 5} "new-" "i"]] []  0)
-           '([:swap [{:tag :div#top :index 0} {:tag :i :index 1}]
-              [:i {:x 5} ([:span.ca-text-node {} ("new-i")])]
+           `([:swap [{:tag :div :index 0} {:tag :i :index 1}]
+              [:i {:x 5} (~(normalize "new-i"))]
               nil])
-           "swap if tag differ. normalize the content")
+           "swap if tag differ.")
 
 
        (de (html-delta [:div#top [:p] [:div [:input {:value 5}]]]
                        [:div#top [:p] [:div [:input {:value 6}]]] [] 0)
-           '([:att [{:tag :div#top :index 0} {:tag :div :index 1} {:tag :input :index 0}]
+           '([:att [{:tag :div :index 0} {:tag :div :index 1} {:tag :input :index 0}]
               :value 6])
-           "Attribute difference"))
+           "Attribute difference")
+
+       (all-contained
+        (html-delta [:div [:p#aa.bb "aaa"]]
+                    [:div [:p#cc.dd "aaa"]] [] 0)
+        #{[:att [{:tag :div :index 0} {:tag :p :index 0}]
+           :class " dd"]
+          [:att [{:tag :div :index 0} {:tag :p :index 0}]
+           :id "cc"]}))

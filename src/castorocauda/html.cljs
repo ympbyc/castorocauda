@@ -1,4 +1,5 @@
-(ns castorocauda.html)
+(ns castorocauda.html
+  (:require [clojure.string :as cstring]))
 
 (defn prn-log
   [x]
@@ -38,7 +39,20 @@
    :index n})
 
 
-(declare normalize)
+(def parse-tagname
+  ;;extract tag name, id and classes from keyword
+  (memoize
+   (fn [tagname]
+     (let [[_ name _ id classes] (re-matches #"^([^.^#]+)(#([^.]+))?(\..+)?" tagname)
+           attrs {}
+           attrs (if classes
+                   (assoc attrs :class (cstring/replace classes #"\." " "))
+                   attrs)
+           attrs (if id (assoc attrs :id (str id)) attrs)]
+       {:tag   (keyword name)
+        :attrs attrs}))))
+
+
 
 (defn merge-strings
   "Group adjoining strings. This corresponds to browsers' behaviour."
@@ -55,7 +69,7 @@
 (defn- flatten-children
   "([:div 1] ([:p 2] [:b 3]) [:i 4]) -> ([:div 1] [:p 2] [:b 3] [:i 4])"
   [acc x]
-  (if (list? x)
+  (if (seq? x)
     (concat acc x)
     (concat acc (list x))))
 
@@ -66,14 +80,21 @@
    [:div {} xxx (yyy) zzz] -> [:div {} (xxx yyy zzz)]
    hello                   -> [:_textNode {} hello]"
   [el]
-  (let [[tg at & chs] el
-        [at chs]      (cond (map? at) [at chs]
-                            (nil? at) [{} chs]
-                            :else     [{}  (cons at chs)])
-        [tg chs]      (if (keyword? tg) [tg chs] [:span.ca-text-node (cons tg chs)])
-        chs           (merge-strings chs)
-        chs           (reduce flatten-children '() chs)]
-    [tg at chs]))
+  (if (string? el) [:_TextNode {} (list el)]
+      (let [[tg at & chs] el
+            tg-parsed (parse-tagname tg)
+            [at chs]      (cond (map? at) [at chs]
+                                (or (empty? at))   [{} chs]
+                                (and (seq? at) (empty? chs)) [{} at] ;;list at att position
+                                :else     [{}  (cons at chs)])
+            [tg at]       [(:tag tg-parsed) (merge at (:attrs tg-parsed))]
+            chs           (merge-strings chs)
+            chs           (reduce flatten-children '() chs)]
+        [tg at chs])))
+
+
+(defn invalid? [x]
+  (or (nil? x) (and (coll? x) (empty? x))))
 
 
 (declare delta-dive)
@@ -83,10 +104,11 @@
    where type Delta = [typ path att-name val]"
   [old-dom new-dom path n]
   (cond
-   (nil? old-dom)
-   (list [:append path new-dom nil])
+   (invalid? old-dom)
+   (let [[tg at chs] (normalize new-dom)]
+     (list [:append path [tg at (map normalize chs)] nil]))
 
-   (nil? new-dom)
+   (invalid? new-dom)
    (list [:remove path nil n])
 
    :else
@@ -97,11 +119,11 @@
       (= new-dom old-dom)
       '()
 
-      (= tg1 tg2 :span.ca-text-node)
+      (= tg1 tg2 :_TextNode)
       (list [:nodeValue next-path (first chs2) nil])
 
-      (= tg2 :span.ca-text-node) ;only the new-dom is textnode
-      (list [:swap next-path new-dom nil])
+      (= tg2 :_TextNode) ;only the new-dom is textnode
+      (list [:swap next-path (first chs2) nil])
 
       (not= tg1 tg2)
       (list [:swap next-path [tg2 at2 (map normalize chs2)] nil])
