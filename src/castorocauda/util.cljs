@@ -20,23 +20,28 @@
 
 (defn q-select-all
   ([q]
-     (.querySelectorAll js/document q))
+     (q-select-all q js/document))
   ([q el]
-     (.querySelectorAll el q)))
+     (->vec (.querySelectorAll el q))))
 
 
-(defn prn-log [x]
-  (.log js/console (prn-str x)))
+(defn prn-log [& xs]
+  (.log js/console (apply prn-str xs)))
 
 
 
 (defn selector-match? [el sel]
-  (some (partial = el) (->vec (q-select-all sel (getParentElement el)))))
+  (some (partial = el) (q-select-all sel (getParentElement el))))
+
+
+(defn delayed-fn [msec f]
+  (fn [& args]
+    (js/setTimeout #(apply f args) msec)))
 
 
 
 (defn dom-element-events
-  [el event-name]
+  [event-name el]
   (let [tl (timeline)]
     (.addEventListener
      el event-name
@@ -47,8 +52,8 @@
 (defn dom-delegated-events
   "delegated events can be captured by specifying a selector query or a fn"
   ([event-name sel]
-     (dom-delegated-events document/body event-name sel))
-  ([el event-name sel]
+     (dom-delegated-events event-name sel document/body))
+  ([event-name sel el]
      (let [tl (timeline)]
        (.addEventListener
         el event-name

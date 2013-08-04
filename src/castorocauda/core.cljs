@@ -1,7 +1,6 @@
 (ns castorocauda.core
   (:require [castorocauda.dom :as cdom]
-            [castorocauda.timeline :refer [tl-merge tl-map]]
-            [castorocauda.util :refer [prn-log]]))
+            [castorocauda.timeline :refer [tl-merge tl-map]]))
 
 
 (defn launch-app
@@ -21,7 +20,7 @@
          (apply (partial tl-merge (fn [& xs] xs)))
 
          (tl-map
-          (fn [st-val-tl] (prn-log st-val-tl) (into {} (map (fn [x y] [x y]) st-keys st-val-tl))))
+          (fn [st-val-tl] (into {} (map (fn [x y] [x y]) st-keys st-val-tl))))
 
          (tl-map
           (fn [state]

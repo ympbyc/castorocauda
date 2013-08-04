@@ -15,8 +15,14 @@
      (->> xs seq ->timeline)))
 
 
+(def timeline? (partial instance? Timeline))
+
 (defn tl-deref [tl]
   (->> tl :stream deref))
+
+
+(defn tl-now [tl]
+  (->> tl tl-deref first))
 
 
 (defn tl-cons!

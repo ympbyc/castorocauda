@@ -92,7 +92,7 @@
   [new-dom base-el]
   (swap! dom-edn
          (fn [old-dom]
-           (prn-log {:OLD old-dom
+           (comment prn-log {:OLD old-dom
                      :NEW new-dom})
            (propagate-dom-change
             (html-delta old-dom new-dom [] 0)

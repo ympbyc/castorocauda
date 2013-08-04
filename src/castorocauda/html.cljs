@@ -38,7 +38,20 @@
    :index n})
 
 
-(declare normalize)
+(def parse-tagname
+  ;;extract tag name, id and classes from keyword
+  (memoize
+   (fn [tagname]
+     (let [[_ name _ id classes] (re-matches #"^([^.^#]+)(#([^.]+))?(\..+)?" tagname)
+           attrs {}
+           attrs (if classes
+                   (assoc attrs :class (clojure.string/replace classes #"\." " "))
+                   attrs)
+           attrs (if id (assoc attrs :id (str id)) attrs)]
+       {:tag   (keyword name)
+        :attrs attrs}))))
+
+
 
 (defn merge-strings
   "Group adjoining strings. This corresponds to browsers' behaviour."
@@ -55,7 +68,7 @@
 (defn- flatten-children
   "([:div 1] ([:p 2] [:b 3]) [:i 4]) -> ([:div 1] [:p 2] [:b 3] [:i 4])"
   [acc x]
-  (if (list? x)
+  (if (seq? x)
     (concat acc x)
     (concat acc (list x))))
 
@@ -66,15 +79,17 @@
    [:div {} xxx (yyy) zzz] -> [:div {} (xxx yyy zzz)]
    hello                   -> [:_textNode {} hello]"
   [el]
-  (let [[tg at & chs] el
-        [at chs]      (cond (map? at) [at chs]
-                            (or (empty? at))   [{} chs]
-                            (and (seq? at) (empty? chs)) [{} at] ;;list at att position
-                            :else     [{}  (cons at chs)])
-        [tg chs]      (if (keyword? tg) [tg chs] [:_TextNode (cons tg chs)])
-        chs           (merge-strings chs)
-        chs           (reduce flatten-children '() chs)]
-    [tg at chs]))
+  (if (string? el) [:_TextNode {} (list el)]
+      (let [[tg at & chs] el
+            tg-parsed (parse-tagname tg)
+            [at chs]      (cond (map? at) [at chs]
+                                (or (empty? at))   [{} chs]
+                                (and (seq? at) (empty? chs)) [{} at] ;;list at att position
+                                :else     [{}  (cons at chs)])
+            [tg at]       [(:tag tg-parsed) (merge at (:attrs tg-parsed))]
+            chs           (merge-strings chs)
+            chs           (reduce flatten-children '() chs)]
+        [tg at chs])))
 
 
 (defn invalid? [x]
