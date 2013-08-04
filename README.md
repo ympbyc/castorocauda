@@ -33,9 +33,7 @@ Here is an entire concrete example program using Castorocauda. It displays two e
   </head>
   <body>
     <h1>Add Two Numbers</h1>
-    <div id="add-two-numbers-widget">
-      <!-- Castorocauda renders this area -->
-    </div>
+    <div id="add-two-numbers-widget"></div>
   </body>
 </html>
 ```

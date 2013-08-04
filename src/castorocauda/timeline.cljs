@@ -2,24 +2,36 @@
 
 ;;;; timeline.cljs
 ;;;; A Deadly Naive Implementation of FRP Stream.
-;;;; It leaks every memory you allocate for it because it is basically a cons-only seq
 
-(declare tl-now)
 
-(defrecord Timeline [stream]
-  ;;  Object
-  ;; (toString [x]
-  ;;    (tl-now x))
-  )
+(def default-timeline-size-limit 100)
+(def default-timeline-resetable  true)
+
+
+(defprotocol FRPStream
+  (update! [this item] "item become available to the consumer")
+  (current-value [this] "returns the newest state")
+  (subscribe [this f] "register a fn that get called upon update!"))
+
+
+(declare tl-cons! tl-now tl-map)
+
+(defrecord Timeline [stream size-limit resetable count]
+  FRPStream
+  (update! [this item]  (tl-cons! item this))
+  (current-value [this] (tl-now this))
+  (subscribe [this f]   (tl-map f this)))
 
 
 (defn ->timeline
-  [xs]
-  (->Timeline (atom (seq xs))))
+  [xs & {:keys [size resetable]
+         :or   {size default-timeline-size-limit
+                resetable default-timeline-resetable}}]
+  (->Timeline (atom (seq xs))  size resetable (atom (count xs))))
 
 (defn timeline
   "Create a timeline. A timeline is an atom of seq wrapped in a record."
-  ([] (->Timeline (atom '())))
+  ([] (->timeline '()))
   ([& xs]
      (->> xs seq ->timeline)))
 
@@ -35,10 +47,40 @@
 (def tl-now (comp first tl-deref))
 
 
+(defn delayed
+  "Duplicate definition is in util.cljs.
+   Poor man's TCO for side-effect-ful operations.
+   Use js/setTimeout to wait for the clearance of call stack."
+  [f & args]
+  (js/setTimeout #(apply f args) 0))
+
+
+(defn- adjust-after-cons!
+  "Adjust a timeline after consing based on its config.
+   This step is needed to avoid memory leak"
+  [{:keys [stream size-limit resetable count] :as tl}]
+  (cond (< @count size-limit)
+        tl
+
+        resetable
+        (do
+          (swap! stream (comp list first))
+          (reset! count 1)
+          tl)
+
+        :else    ;;this is super inefficient
+        (do
+          (swap! stream (partial take size-limit))
+          (reset! count size-limit)
+          tl)))
+
+
 (defn tl-cons!
   "Unshift a value into a timeline"
   [x tl]
   (swap! (:stream tl) (partial cons x))
+  (swap! (:count tl) inc)
+  (delayed adjust-after-cons! tl)
   tl)
 
 
@@ -113,6 +155,8 @@
 
 ;;;; Lifted functions
 ;;;; Each function defined below will produces a timeline of streams
+
+(def tl-of-rest    (tl-lift rest))
 
 (def tl-of-take    (tl-lift take))
 

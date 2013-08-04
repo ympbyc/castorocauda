@@ -2,11 +2,7 @@
 
 (ns castorocauda.macros)
 
-
-(defmacro run-app
-  [state-gen render-all base-el]
-  `(castorocauda/launch-app
-    (fn []
-      ~state-gen)
-    ~render-all
-    ~base-el))
+(defmacro do-timeout [n & body]
+  `(js/setTimeout
+    (fn [] ~@body)
+    ~n))
