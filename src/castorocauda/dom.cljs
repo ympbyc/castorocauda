@@ -52,7 +52,7 @@
            | `[:swap    path hiccup nil]`
            | `[:nodeValue path String nil]`"
   [deltas base-el]
-  (prn-log (str "DELTAS:" (prn-str deltas)))
+  ;;(prn-log (str "DELTAS:" (prn-str deltas)))
   (let [sel-path-dom (memoize (partial select-path-dom base-el))
         get-children (memoize (fn [node] (->vec (.-childNodes node))))]
     (doseq [[typ path a b :as delta] deltas]

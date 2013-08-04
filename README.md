@@ -6,7 +6,9 @@
 
 Castorocauda is a descendent of [WebFUI](http://d3j5vwomefv46c.cloudfront.net/photos/large/795746565.jpg) -  a client side web application framework that free us from manual DOM mutation and the scattering of local state. Castorocauda inherits from WebFUI the State->EDN->DOM mechanics with improvements that keep DOM mutation at minimum. Castorocauda dropped the dom-watching plugin mechanics and delegated their roles to FRP streams called timelines.
 
-Castorocauda is purposely not a framework. It is a library, a collection of comporsable functions. Unlike WebFUI, apps created using Castotocauda don't need to be singletons. There is no inversion of control so you have the full control of your app at any given point in its execution.
+Castorocauda is purposely not a framework. It is a library, a collection of composable functions. Unlike WebFUI, apps created using Castotocauda don't need to be singletons.
+
+Castorocauda is at this stage experimental. No API is fixed.
 
 ## Artifact
 
