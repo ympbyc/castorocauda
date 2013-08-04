@@ -1,1 +1,7 @@
+*.js
 /target
+.DS_Store
+*~
+.\#*
+\#*
+.lein*
