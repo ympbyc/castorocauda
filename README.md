@@ -88,8 +88,8 @@ Here is an entire concrete example program using Castorocauda. It displays two e
 
 
 Here's a visualization of DOM elements that gets modified when you type some numbers in.
-![delta static](https://rawgithub.com/ympbyc/castorocauda/rewrite/resources/public/images/castorocauda1.png)
-![delta gif](https://rawgithub.com/ympbyc/castorocauda/rewrite/resources/public/images/Castorocauda3.gif)
+![delta static](https://rawgithub.com/ympbyc/castorocauda/master/resources/public/images/castorocauda1.png)
+![delta gif](https://rawgithub.com/ympbyc/castorocauda/master/resources/public/images/Castorocauda3.gif)
 With new html delta calculator and committer, you can trust that only the smallest possible set of nodes are re-rendered.
 
 
