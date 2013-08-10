@@ -1,7 +1,9 @@
 (ns castorocauda.timeline)
 
+
 ;;;; timeline.cljs
 ;;;; A Deadly Naive Implementation of FRP Stream.
+;;;; You may probably not want to use this feature quite yet.
 
 
 (def default-timeline-size-limit 100)

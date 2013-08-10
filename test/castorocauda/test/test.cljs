@@ -1,4 +1,4 @@
-(ns test.test)
+(ns catest.test)
 
 (defn prn=
   [x y mes]

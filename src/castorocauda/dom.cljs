@@ -9,11 +9,6 @@
                    [dommy.macros :as dommy]))
 
 
-(defn prn-log
-  [x]
-  (.log js/console (prn-str x))
-  x)
-
 (def ->vec (comp js->clj goog.array.toArray))
 
 
@@ -33,7 +28,9 @@
       (select-path-dom (get children index) rest-path))))
 
 
-(defn glow [node]
+(defn glow
+  "For manual testing. Glow the selected node green for a while"
+  [node]
   (let [white (array 255 255 255)
         color (array 188 237 128)
         anim (domfx/BgColorTransform. node white color 500)]
@@ -41,6 +38,17 @@
                     (fn []
                       (.play (domfx/BgColorTransform. node color white 500))))
     (.play anim)))
+
+
+(defn style->str
+  "Generate a style string from map
+   e.g.)  {:background \"red\" :width \"20px\"}
+       -> \"background: red; width: 20px; \""
+  [style]
+  (if (string? style) style
+      (apply str
+             (for [[k v] style]
+               (str (name k) ": " v "; ")))))
 
 
 (defn- propagate-dom-change
@@ -52,7 +60,6 @@
            | `[:swap    path hiccup nil]`
            | `[:nodeValue path String nil]`"
   [deltas base-el]
-  ;;(prn-log (str "DELTAS:" (prn-str deltas)))
   (let [sel-path-dom (memoize (partial select-path-dom base-el))
         get-children (memoize (fn [node] (->vec (.-childNodes node))))]
     (doseq [[typ path a b :as delta] deltas]
@@ -63,7 +70,9 @@
           (set! (.-innerHTML node) (hiccups/html a))
 
           :att
-          (.setAttribute node (name a) (str b))
+          (if (= a :style)
+            (.setAttribute node (name a) (style->str b))
+            (.setAttribute node (name a) (str b)))
 
           :rem-att
           (.removeAttribute node (name a))
@@ -80,8 +89,8 @@
           :nodeValue
           (set! (.-nodeValue node) a))
 
-        ;;glow affected node red for a while
-        (if (gdom/isElement node)
+        ;;glow affected node green for a while
+        (comment if (gdom/isElement node)
           (glow node)
           (some-> node .-parentNode glow))))))
 
@@ -89,11 +98,9 @@
 (defn- gendom
   "new-dom :: `hiccup`,
    base-el :: `HTMLElement`"
-  [new-dom base-el]
+  [base-el new-dom]
   (swap! dom-edn
          (fn [old-dom]
-           (comment prn-log {:OLD old-dom
-                     :NEW new-dom})
            (propagate-dom-change
             (html-delta old-dom new-dom [] 0)
             base-el)

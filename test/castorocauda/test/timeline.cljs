@@ -1,10 +1,10 @@
-(ns test.timeline
+(ns catest.timeline
   (:use [castorocauda.timeline :only [->timeline timeline tl-deref tl-cons! sync-tl
                                       tl-map tl-merge tl-filter tl-apply tl-lift tl-of-take]]
         [castorocauda.util :only [q-select dom-element-events]]
-        [test.test :only [prn= de ok prn-log]]
+        [catest.test :only [prn= de ok prn-log]]
         [cljs.core.async :only [>! <! timeout chan]])
-  (:use-macros [test.test-macro :only [qtest async-test go-resume]]
+  (:use-macros [catest.test-macro :only [qtest async-test go-resume]]
                [cljs.core.async.macros :only [go]]))
 
 

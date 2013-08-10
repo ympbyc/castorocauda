@@ -1,4 +1,4 @@
-# Castorocauda - Client Side Web App Toolkit
+# Castorocauda - DOM Abstraction * FRP
 
 ![logo](http://d3j5vwomefv46c.cloudfront.net/photos/large/795746565.jpg)
 
@@ -6,7 +6,7 @@
 
 Castorocauda is a descendent of [WebFUI](http://d3j5vwomefv46c.cloudfront.net/photos/large/795746565.jpg) -  a client side web application framework that free us from manual DOM mutation and the scattering of local state. Castorocauda inherits from WebFUI the State->EDN->DOM mechanics with improvements that keep DOM mutation at minimum. Castorocauda dropped the dom-watching plugin mechanics and delegated their roles to FRP streams called timelines.
 
-Castorocauda is purposely not a framework. It is a library, a collection of composable functions. Unlike WebFUI, apps created using Castotocauda don't need to be singletons.
+Castorocauda is purposely not a framework. It is a library, a collection of composable functions. Unlike WebFUI, apps created using Castotocauda don't need to be singletons. You could freely mix Castorocauda with other libraries such as core.async.
 
 Castorocauda is at this stage experimental. No API is fixed.
 
@@ -86,6 +86,7 @@ Here is an entire concrete example program using Castorocauda. It displays two e
 (dom-ready main)
 ```
 
+
 Here's a visualization of DOM elements that gets modified when you type some numbers in.
 ![delta static](https://rawgithub.com/ympbyc/castorocauda/master/resources/public/images/castorocauda1.png)
 ![delta gif](https://rawgithub.com/ympbyc/castorocauda/master/resources/public/images/Castorocauda3.gif)
@@ -94,7 +95,7 @@ With new html delta calculator and committer, you can trust that only the smalle
 
 ## Running the Test Suit
 
-Castorocauda.html and Castorocauda.timeline are fully tested. You need to run `lein cljsbuild once` to build /resources/public/js/tests.js before running the tests in the browser. Once that's done open test.html to see how it goes.
+Castorocauda.html and Castorocauda.timeline are fully tested. You need to run `lein cljsbuild once` to build /resources/public/js/tests.js before running the tests in the browser. Once that's done open test.html to see how it goes. Note that Castorocauda uses core.async, which is at this stage SNAPSHOT, for testing so you need to open project.clj and uncomment the specified line to build the tests.
 
 
 
