@@ -14,6 +14,7 @@
   [fun]
   (set! (.-onload js/window) fun))
 
+
 (defn q-select
   "Wrapper for document.querySelecot and element.querySelector"
   ([q]

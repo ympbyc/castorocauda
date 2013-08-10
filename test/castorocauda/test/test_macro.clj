@@ -1,5 +1,5 @@
 ;*CLJSBUILD-MACRO-FILE*;
-(ns test.test-macro)
+(ns catest.test-macro)
 
 (defmacro qtest
   [name & body]

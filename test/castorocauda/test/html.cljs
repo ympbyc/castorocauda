@@ -1,8 +1,8 @@
-(ns test.html
+(ns catest.html
   (:use [castorocauda.html :only [pad attr-diffs mk-path html-delta merge-strings
                                   normalize]]
-        [test.test :only [se de ok prn-log]])
-  (:use-macros [test.test-macro :only [qtest]]))
+        [catest.test :only [se de ok prn-log]])
+  (:use-macros [catest.test-macro :only [qtest]]))
 
 
 (js/module "castorocauda.html")

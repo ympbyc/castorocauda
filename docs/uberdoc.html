@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8" content="text/html" http-equiv="Content-Type" /><meta content="Castorocauda is a clone of WebFUI with radical changes in its internal - All castorocauda source included in this repository release under Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)" name="description" /><style type="text/css">/**
+<html><head><meta charset="utf-8" content="text/html" http-equiv="Content-Type" /><meta content="Castorocauda is a client side web development framework-ish library that can be mixed freely with other libraries - All castorocauda source included in this repository release under Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)" name="description" /><style type="text/css">/**
  * SyntaxHighlighter
  * http://alexgorbatchev.com/SyntaxHighlighter
  *
@@ -3028,17 +3028,14 @@ net.brehaut.ClojureTools = (function (SH) {
     build_tree: build_tree
   };
 })(SyntaxHighlighter);
-</script><title>castorocauda -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name">castorocauda</h1><h2 class="project-version">0.0.4</h2><br /><p>Castorocauda is a clone of WebFUI with radical changes in its internal - All castorocauda source included in this repository release under Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)</p>
-</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.5.1</td></tr><tr><td class="dep-name">hiccups</td><td class="dotted"><hr /></td><td class="dep-version">0.2.0</td></tr><tr><td class="dep-name">prismatic/dommy</td><td class="dotted"><hr /></td><td class="dep-version">0.1.1</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#castorocauda.macros">castorocauda.macros</a></li><li><a href="#castorocauda.core">castorocauda.core</a></li><li><a href="#castorocauda.dom">castorocauda.dom</a></li><li><a href="#castorocauda.html">castorocauda.html</a></li><li><a href="#castorocauda.timeline">castorocauda.timeline</a></li><li><a href="#castorocauda.util">castorocauda.util</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#castorocauda.macros" name="castorocauda.macros"><h1 class="project-name">castorocauda.macros</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p><em>CLJSBUILD-MACRO-FILE</em>;</p>
+</script><title>castorocauda -- Marginalia</title></head><body><table><tr><td class="docs"><div class="header"><h1 class="project-name">castorocauda</h1><h2 class="project-version">0.0.9</h2><br /><p>Castorocauda is a client side web development framework-ish library that can be mixed freely with other libraries - All castorocauda source included in this repository release under Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)</p>
+</div><div class="dependencies"><h3>dependencies</h3><table><tr><td class="dep-name">org.clojure/clojure</td><td class="dotted"><hr /></td><td class="dep-version">1.5.1</td></tr><tr><td class="dep-name">org.clojure/core.async</td><td class="dotted"><hr /></td><td class="dep-version">0.1.0-SNAPSHOT</td></tr><tr><td class="dep-name">hiccups</td><td class="dotted"><hr /></td><td class="dep-version">0.2.0</td></tr><tr><td class="dep-name">prismatic/dommy</td><td class="dotted"><hr /></td><td class="dep-version">0.1.1</td></tr></table></div></td><td class="codes" style="text-align: center; vertical-align: middle;color: #666;padding-right:20px"><br /><br /><br />(this space intentionally left almost blank)</td></tr><tr><td class="docs"><div class="toc"><a name="toc"><h3>namespaces</h3></a><ul><li><a href="#castorocauda.macros">castorocauda.macros</a></li><li><a href="#castorocauda.core">castorocauda.core</a></li><li><a href="#castorocauda.dom">castorocauda.dom</a></li><li><a href="#castorocauda.html">castorocauda.html</a></li><li><a href="#castorocauda.timeline">castorocauda.timeline</a></li><li><a href="#castorocauda.util">castorocauda.util</a></li></ul></div></td><td class="codes">&nbsp;</td></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#castorocauda.macros" name="castorocauda.macros"><h1 class="project-name">castorocauda.macros</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs"><p><em>CLJSBUILD-MACRO-FILE</em>;</p>
 </td><td class="codes"></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns castorocauda.macros)</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defmacro run-app
-  [state-gen render-all base-el]
-  `(castorocauda/launch-app
-    (fn []
-      ~state-gen)
-    ~render-all
-    ~base-el))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#castorocauda.core" name="castorocauda.core"><h1 class="project-name">castorocauda.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defmacro do-timeout [n &amp; body]
+  `(js/setTimeout
+    (fn [] ~@body)
+    ~n))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#castorocauda.core" name="castorocauda.core"><h1 class="project-name">castorocauda.core</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns castorocauda.core
   (:require [castorocauda.dom :as cdom]
             [castorocauda.timeline :refer [tl-merge tl-map]]))</pre></td></tr><tr><td class="docs"><p>Map renderer to the state.
@@ -3050,7 +3047,7 @@ net.brehaut.ClojureTools = (function (SH) {
     representationof the app.</p>
 </td><td class="codes"><pre class="brush: clojure">(defn launch-app
   [state render-all base-el]
-  (cdom/gendom (render-all {}) base-el)
+  (cdom/gendom base-el (render-all {}))
   (let [st-keys (keys state)]
     (-&gt;&gt; (vals state)
          (apply (partial tl-merge (fn [&amp; xs] xs)))
@@ -3058,7 +3055,13 @@ net.brehaut.ClojureTools = (function (SH) {
           (fn [st-val-tl] (into {} (map (fn [x y] [x y]) st-keys st-val-tl))))
          (tl-map
           (fn [state]
-            (cdom/gendom (render-all state) base-el))))))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#castorocauda.dom" name="castorocauda.dom"><h1 class="project-name">castorocauda.dom</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
+            (cdom/gendom base-el (render-all state)))))))</pre></td></tr><tr><td class="docs"><p>If you are using different method for state management than timelines (e.g. core.async),
+   Use this procedure to manually commit the change in state to the DOM.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn update-dom
+  [base-el renderer state]
+  (-&gt;&gt; state
+       renderer
+       (cdom/gendom base-el)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#castorocauda.dom" name="castorocauda.dom"><h1 class="project-name">castorocauda.dom</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns castorocauda.dom
   (:require [castorocauda.html :refer [html-delta wrap-tags]]
             [dommy.core :as dommy_]
@@ -3068,10 +3071,6 @@ net.brehaut.ClojureTools = (function (SH) {
             [hiccups.runtime :as hiccupsrt])
   (:require-macros [hiccups.core :as hiccups]
                    [dommy.macros :as dommy]))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn prn-log
-  [x]
-  (.log js/console (prn-str x))
-  x)</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(def -&gt;vec (comp js-&gt;clj goog.array.toArray))</pre></td></tr><tr><td class="docs"><p>Current DOM represented in EDN</p>
 </td><td class="codes"><pre class="brush: clojure">(def dom-edn (atom nil))</pre></td></tr><tr><td class="docs"><p><code>HTMLElement</code>
    -> <code>[{:index Int :tag Keyword}]</code>
@@ -3082,15 +3081,24 @@ net.brehaut.ClojureTools = (function (SH) {
     start-el
     (let [children (-&gt;&gt; start-el .-childNodes -&gt;vec)]
       (assert (&gt; (count children) 0))
-      (select-path-dom (get children index) rest-path))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn glow [node]
+      (select-path-dom (get children index) rest-path))))</pre></td></tr><tr><td class="docs"><p>For manual testing. Glow the selected node green for a while</p>
+</td><td class="codes"><pre class="brush: clojure">(defn glow
+  [node]
   (let [white (array 255 255 255)
         color (array 188 237 128)
         anim (domfx/BgColorTransform. node white color 500)]
     (gevents/listen anim goog/fx.Transition.EventType.END
                     (fn []
                       (.play (domfx/BgColorTransform. node color white 500))))
-    (.play anim)))</pre></td></tr><tr><td class="docs"><p>deltas :: <code>[:html    path hiccup nil]</code>
+    (.play anim)))</pre></td></tr><tr><td class="docs"><p>Generate a style string from map
+   e.g.)  {:background "red" :width "20px"}
+       -> "background: red; width: 20px; "</p>
+</td><td class="codes"><pre class="brush: clojure">(defn style-&gt;str
+  [style]
+  (if (string? style) style
+      (apply str
+             (for [[k v] style]
+               (str (name k) &quot;: &quot; v &quot;; &quot;)))))</pre></td></tr><tr><td class="docs"><p>deltas :: <code>[:html    path hiccup nil]</code>
            | <code>[:att     path attr-name attr-value]</code>
            | <code>[:rem-att path attr-name]</code>
            | <code>[:append  path hiccup nil]</code>
@@ -3099,7 +3107,6 @@ net.brehaut.ClojureTools = (function (SH) {
            | <code>[:nodeValue path String nil]</code></p>
 </td><td class="codes"><pre class="brush: clojure">(defn- propagate-dom-change
   [deltas base-el]
-  (prn-log (str &quot;DELTAS:&quot; (prn-str deltas)))
   (let [sel-path-dom (memoize (partial select-path-dom base-el))
         get-children (memoize (fn [node] (-&gt;vec (.-childNodes node))))]
     (doseq [[typ path a b :as delta] deltas]
@@ -3109,7 +3116,9 @@ net.brehaut.ClojureTools = (function (SH) {
           :html
           (set! (.-innerHTML node) (hiccups/html a))
           :att
-          (.setAttribute node (name a) (str b))
+          (if (= a :style)
+            (.setAttribute node (name a) (style-&gt;str b))
+            (.setAttribute node (name a) (str b)))
           :rem-att
           (.removeAttribute node (name a))
           :append
@@ -3120,23 +3129,24 @@ net.brehaut.ClojureTools = (function (SH) {
           (gdom/replaceNode (dommy/node a) node)
           :nodeValue
           (set! (.-nodeValue node) a))
-        ;;glow affected node red for a while
-        (if (gdom/isElement node)
+        ;;glow affected node green for a while
+        (comment if (gdom/isElement node)
           (glow node)
           (some-&gt; node .-parentNode glow))))))</pre></td></tr><tr><td class="docs"><p>new-dom :: <code>hiccup</code>,
    base-el :: <code>HTMLElement</code></p>
 </td><td class="codes"><pre class="brush: clojure">(defn- gendom
-  [new-dom base-el]
+  [base-el new-dom]
   (swap! dom-edn
          (fn [old-dom]
-           (comment prn-log {:OLD old-dom
-                     :NEW new-dom})
            (propagate-dom-change
             (html-delta old-dom new-dom [] 0)
             base-el)
            new-dom)))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#castorocauda.html" name="castorocauda.html"><h1 class="project-name">castorocauda.html</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns castorocauda.html
-  (:require [clojure.string :as cstring]))</pre></td></tr><tr><td class="docs">
+  (:require [clojure.string :as cstring]))</pre></td></tr><tr><td class="docs"><p>HTML.cljs
+Delta calcuration between two DOM-EDNs
+Intended for internal use.</p>
+</td><td class="codes"></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn prn-log
   [x]
   (.log js/console (prn-str x))
@@ -3195,8 +3205,10 @@ net.brehaut.ClojureTools = (function (SH) {
    hello                   -> [:_textNode {} hello]</p>
 </td><td class="codes"><pre class="brush: clojure">(defn normalize
   [el]
-  (if (string? el) [:_TextNode {} (list el)]
-      (let [[tg at &amp; chs] el
+  (cond (string? el)
+        [:_TextNode {} (list el)]
+        (seq el)
+        (let [[tg at &amp; chs] el
             tg-parsed (parse-tagname tg)
             [at chs]      (cond (map? at) [at chs]
                                 (or (empty? at))   [{} chs]
@@ -3205,7 +3217,9 @@ net.brehaut.ClojureTools = (function (SH) {
             [tg at]       [(:tag tg-parsed) (merge at (:attrs tg-parsed))]
             chs           (merge-strings chs)
             chs           (reduce flatten-children '() chs)]
-        [tg at chs])))</pre></td></tr><tr><td class="docs">
+          [tg at chs])
+        :else   ;;e.g. raw number
+        [:_TextNode {} (list (str el))]))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn invalid? [x]
   (or (nil? x) (and (coll? x) (empty? x))))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(declare delta-dive)</pre></td></tr><tr><td class="docs"><p>Hiccup * Hiccup * [Path] * Int -> [Delta]
@@ -3249,28 +3263,59 @@ net.brehaut.ClojureTools = (function (SH) {
             (range x))))</pre></td></tr><tr><td class="spacer docs">&nbsp;</td><td class="codes" /></tr><tr><td class="docs"><div class="docs-header"><a class="anchor" href="#castorocauda.timeline" name="castorocauda.timeline"><h1 class="project-name">castorocauda.timeline</h1><a class="toc-link" href="#toc">toc</a></a></div></td><td class="codes" /></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(ns castorocauda.timeline)</pre></td></tr><tr><td class="docs"><p>timeline.cljs
 A Deadly Naive Implementation of FRP Stream.
-It leaks every memory you allocate for it because it is basically a cons-only seq</p>
+You may probably not want to use this feature quite yet.</p>
 </td><td class="codes"></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(declare tl-now)</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defrecord Timeline [stream]
-  ;;  Object
-  ;; (toString [x]
-  ;;    (tl-now x)))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def default-timeline-size-limit 100)
+(def default-timeline-resetable  true)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defprotocol FRPStream
+  (update! [this item] &quot;item become available to the consumer&quot;)
+  (current-value [this] &quot;returns the newest state&quot;)
+  (subscribe [this f] &quot;register a fn that get called upon update!&quot;))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(declare tl-cons! tl-now tl-map)</pre></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(defrecord Timeline [stream size-limit resetable count]
+  FRPStream
+  (update! [this item]  (tl-cons! item this))
+  (current-value [this] (tl-now this))
+  (subscribe [this f]   (tl-map f this)))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn -&gt;timeline
-  [xs]
-  (-&gt;Timeline (atom (seq xs))))</pre></td></tr><tr><td class="docs"><p>Create a timeline. A timeline is an atom of seq wrapped in a record.</p>
+  [xs &amp; {:keys [size resetable]
+         :or   {size default-timeline-size-limit
+                resetable default-timeline-resetable}}]
+  (-&gt;Timeline (atom (seq xs))  size resetable (atom (count xs))))</pre></td></tr><tr><td class="docs"><p>Create a timeline. A timeline is an atom of seq wrapped in a record.</p>
 </td><td class="codes"><pre class="brush: clojure">(defn timeline
-  ([] (-&gt;Timeline (atom '())))
+  ([] (-&gt;timeline '()))
   ([&amp; xs]
      (-&gt;&gt; xs seq -&gt;timeline)))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(def timeline? (partial instance? Timeline))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn tl-deref [tl]
   &quot;Dereference a seq from the timeline&quot;
   (-&gt;&gt; tl :stream deref))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def tl-now (comp first tl-deref))</pre></td></tr><tr><td class="docs"><p>Unshift a value into a timeline</p>
+</td><td class="codes"><pre class="brush: clojure">(def tl-now (comp first tl-deref))</pre></td></tr><tr><td class="docs"><p>Duplicate definition is in util.cljs.
+   Poor man's TCO for side-effect-ful operations.
+   Use js/setTimeout to wait for the clearance of call stack.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn delayed
+  [f &amp; args]
+  (js/setTimeout #(apply f args) 0))</pre></td></tr><tr><td class="docs"><p>Adjust a timeline after consing based on its config.
+   This step is needed to avoid memory leak</p>
+</td><td class="codes"><pre class="brush: clojure">(defn- adjust-after-cons!
+  [{:keys [stream size-limit resetable count] :as tl}]
+  (cond (&lt; @count size-limit)
+        tl
+        resetable
+        (do
+          (swap! stream (comp list first))
+          (reset! count 1)
+          tl)
+        :else    ;;this is super inefficient
+        (do
+          (swap! stream (partial take size-limit))
+          (reset! count size-limit)
+          tl)))</pre></td></tr><tr><td class="docs"><p>Unshift a value into a timeline</p>
 </td><td class="codes"><pre class="brush: clojure">(defn tl-cons!
   [x tl]
   (swap! (:stream tl) (partial cons x))
+  (swap! (:count tl) inc)
+  (delayed adjust-after-cons! tl)
   tl)</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn- sync-tl-
   [f src-tl dst-tl pred]
@@ -3321,6 +3366,7 @@ It leaks every memory you allocate for it because it is basically a cons-only se
       (tl-apply #(apply f (concat args (list %))) src-tl))))</pre></td></tr><tr><td class="docs"><p>Lifted functions
 Each function defined below will produces a timeline of streams</p>
 </td><td class="codes"></td></tr><tr><td class="docs">
+</td><td class="codes"><pre class="brush: clojure">(def tl-of-rest    (tl-lift rest))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(def tl-of-take    (tl-lift take))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(def tl-of-drop    (tl-lift take))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(def tl-of-reduce  (tl-lift reduce))</pre></td></tr><tr><td class="docs">
@@ -3334,27 +3380,35 @@ Each function defined below will produces a timeline of streams</p>
   (:use [castorocauda.timeline :only [timeline tl-cons!]]
         [goog.dom :only [getParentElement]]))</pre></td></tr><tr><td class="docs"><p>This file isn't what castorocauda uses.
 It is here for your convenience.</p>
-</td><td class="codes"></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(def -&gt;vec (comp js-&gt;clj goog.array.toArray))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn dom-ready [fun]
-  (set! (.-onload js/window) fun))</pre></td></tr><tr><td class="docs">
+</td><td class="codes"></td></tr><tr><td class="docs"><p>Convert array-like objects into a cljs vector</p>
+</td><td class="codes"><pre class="brush: clojure">(def -&gt;vec (comp js-&gt;clj goog.array.toArray))</pre></td></tr><tr><td class="docs"><p>Delay excecution of the function until the DOM has been fixed</p>
+</td><td class="codes"><pre class="brush: clojure">(defn dom-ready
+  [fun]
+  (set! (.-onload js/window) fun))</pre></td></tr><tr><td class="docs"><p>Wrapper for document.querySelecot and element.querySelector</p>
 </td><td class="codes"><pre class="brush: clojure">(defn q-select
   ([q]
      (.querySelector js/document q))
   ([q el]
-     (.querySelector el q)))</pre></td></tr><tr><td class="docs">
+     (.querySelector el q)))</pre></td></tr><tr><td class="docs"><p>Wrapper for document.querySelectorAll and element.querySelectorAll</p>
 </td><td class="codes"><pre class="brush: clojure">(defn q-select-all
   ([q]
      (q-select-all q js/document))
   ([q el]
      (-&gt;vec (.querySelectorAll el q))))</pre></td></tr><tr><td class="docs">
 </td><td class="codes"><pre class="brush: clojure">(defn prn-log [&amp; xs]
-  (.log js/console (apply prn-str xs)))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn selector-match? [el sel]
-  (some (partial = el) (q-select-all sel (getParentElement el))))</pre></td></tr><tr><td class="docs">
-</td><td class="codes"><pre class="brush: clojure">(defn delayed-fn [msec f]
+  (.log js/console (apply prn-str xs))
+  (first xs))</pre></td></tr><tr><td class="docs"><p>Test if selector query matches the element</p>
+</td><td class="codes"><pre class="brush: clojure">(defn selector-match?
+  [el sel]
+  (some (partial = el) (q-select-all sel (getParentElement el))))</pre></td></tr><tr><td class="docs"><p>Wrapper for js/setTimeout</p>
+</td><td class="codes"><pre class="brush: clojure">(defn delayed-fn
+  [msec f]
   (fn [&amp; args]
-    (js/setTimeout #(apply f args) msec)))</pre></td></tr><tr><td class="docs">
+    (js/setTimeout #(apply f args) msec)))</pre></td></tr><tr><td class="docs"><p>Poor man's TCO for side-effect-ful operations.
+   Use js/setTimeout to wait for the clearance of call stack.</p>
+</td><td class="codes"><pre class="brush: clojure">(defn delayed
+  [f &amp; args]
+  (js/setTimeout #(apply f args) 0))</pre></td></tr><tr><td class="docs"><p>A timeline of events occured at the element</p>
 </td><td class="codes"><pre class="brush: clojure">(defn dom-element-events
   [event-name el]
   (let [tl (timeline)]

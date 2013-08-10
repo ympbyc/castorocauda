@@ -12,7 +12,7 @@
    `base-el` is a HTMLElement that castorocauda renders the html
     representationof the app."
   [state render-all base-el]
-  (cdom/gendom (render-all {}) base-el)
+  (cdom/gendom base-el (render-all {}))
   (let [st-keys (keys state)]
 
     (->> (vals state)
@@ -24,4 +24,14 @@
 
          (tl-map
           (fn [state]
-            (cdom/gendom (render-all state) base-el))))))
+            (cdom/gendom base-el (render-all state)))))))
+
+
+
+(defn update-dom
+  "If you are using different method for state management than timelines (e.g. core.async),
+   Use this procedure to manually commit the change in state to the DOM."
+  [base-el renderer state]
+  (->> state
+       renderer
+       (cdom/gendom base-el)))

@@ -1,6 +1,11 @@
 (ns castorocauda.html
   (:require [clojure.string :as cstring]))
 
+;;;; HTML.cljs
+;;;; Delta calcuration between two DOM-EDNs
+;;;; Intended for internal use.
+
+
 (defn prn-log
   [x]
   (.log js/console (prn-str x))
