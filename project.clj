@@ -8,7 +8,7 @@
                  [prismatic/dommy "0.1.1"]
 
                  ;;uncomment the following line when building tests
-                 [org.clojure/core.async "0.1.0-SNAPSHOT"]
+                 ;;[org.clojure/core.async "0.1.0-SNAPSHOT"]
                  ]
   :repositories {"sonatype-oss-public" "https://oss.sonatype.org/content/groups/public/"}
   :plugins [[lein-cljsbuild "0.3.2"]
@@ -19,8 +19,8 @@
                                    :pretty-print true}}
 
                        ;;uncomment following lines when building tests
-                       {:source-paths ["test"]
-                        :compiler {:output-to "resources/public/js/test.js"
-                                   :optimizations :simple
-                                   :pretty-print true}}
+                       ;;{:source-paths ["test"]
+                       ;; :compiler {:output-to "resources/public/js/test.js"
+                       ;;            :optimizations :simple
+                       ;;            :pretty-print true}}
                        ]})
