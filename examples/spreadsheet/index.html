@@ -22,24 +22,38 @@
       h1 {
         font-size: 1.3em;
       }
+      #content {
+        max-width: 960px;
+        margin: 0 auto;
+      }
+      #spreadsheet-example {
+        font-family: Monaco,Menlo,monospace;
+      }
+      .cell {
+        min-width: 15em;
+        padding: 4px 5px;
+        text-align: right;
+      }
     </style>
   </head>
   <body>
-    <h1>Spreadsheet Example</h1>
-    <p id="description">
-      Click on cells to edit its expression. <br />
-      Selecting a cell: <span class="code">COLUMN[ROW]</span><br />
-      Builtin Functions:
-      <span class="code">add</span>
-      <span class="code">sub</span>
-      <span class="code">mul</span>
-      <span class="code">div</span> <br />
-      Example: <span class="code">add(A[1], A[0], 5)</span><br />
-      You can lift arbitrary binary <span class="code">a * a -> a</span>
-      functions with <span class="code">spreadsheet.core/lift-tl-fn</span> and use them in the expression. <br />
-      Example: <span class="code">mod = spreadsheet.core.lift_tl_fn(cljs.core.mod)</span><br />
-      Note that self referencing, direct or indirect, results in a stack overflow.
-    </p>
-    <div id="spreadsheet-widget"></div>
+    <div id="content">
+      <h1>Spreadsheet Example</h1>
+      <p id="description">
+        Click on cells to edit its expression. <br />
+        Selecting a cell: <span class="code">COLUMN[ROW]</span><br />
+        Builtin Functions:
+        <span class="code">add</span>
+        <span class="code">sub</span>
+        <span class="code">mul</span>
+        <span class="code">div</span> <br />
+        Example: <span class="code">add(A[1], A[0], 5)</span><br />
+        You can lift arbitrary binary <span class="code">a * a -> a</span>
+        functions with <span class="code">spreadsheet.core/lift-tl-fn</span> and use them in the expression. <br />
+        Example: <span class="code">mod = spreadsheet.core.lift_tl_fn(cljs.core.mod)</span><br />
+        Note that self referencing, direct or indirect, will result in a stack overflow.
+      </p>
+      <div id="spreadsheet-widget"></div>
+    </div>
   </body>
 </html>

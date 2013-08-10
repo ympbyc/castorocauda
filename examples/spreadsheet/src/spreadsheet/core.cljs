@@ -22,8 +22,8 @@
   "Render a table cell"
   [y x {:keys [val expr mode name] :as cell}]
   (if (= mode :edit)
-    [:td.cell-edit [:input.cell-expr {:value (str expr)}]]
-    [:td.cell-static {:data-id (+ (* y table-x) x) :data-name name} (str expr " = " val)]))
+    [:td.cell-edit.cell [:input.cell-expr {:value (str expr)}]]
+    [:td.cell-static.cell {:data-id (+ (* y table-x) x) :data-name name} (str expr " = " val)]))
 
 
 (defn render-all

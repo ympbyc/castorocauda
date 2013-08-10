@@ -11,7 +11,7 @@
   [:div
    [:h2 (str a " + " b " = " result)]
    [:input#a-in {:type "number"}] " + "
-   [:input#b-in {:type "number"}] " = " (str result)
+   [:input#b-in {:type "number"}] (str " = " result)
    [:p "the result is "
     [:span (if (even? result) "even" "odd")]]
    (if (< result 5)
