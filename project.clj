@@ -1,4 +1,4 @@
-(defproject castorocauda "0.1.0"
+(defproject castorocauda "0.1.2"
   :description "Castorocauda provides an abstraction layer on top of the DOM"
   :url "https://github.com/ympbyc/castorocauda"
   :license {:name "Eclipse Public License"

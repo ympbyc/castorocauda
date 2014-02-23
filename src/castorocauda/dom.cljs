@@ -12,10 +12,6 @@
 (def ->vec (comp js->clj goog.array.toArray))
 
 
-;;Current DOM represented in EDN
-(def dom-edn (atom nil))
-
-
 (defn- select-path-dom
   "`HTMLElement`
    -> `[{:index Int :tag Keyword}]`
@@ -95,13 +91,12 @@
           (some-> node .-parentNode glow))))))
 
 
-(defn- gendom
-  "new-dom :: `hiccup`,
-   base-el :: `HTMLElement`"
-  [base-el new-dom]
-  (swap! dom-edn
-         (fn [old-dom]
-           (propagate-dom-change
-            (html-delta old-dom new-dom [] 0)
-            base-el)
-           new-dom)))
+(defn gendom
+  "base-el :: `HTMLElement`
+   old-edn :: hiccup-style EDN representing DOM
+   new-edn :: hiccup-style EDN representing DOM"
+  [old-edn new-edn base-el]
+  (propagate-dom-change
+   (html-delta old-edn new-edn [] 0)
+   base-el)
+  new-edn)

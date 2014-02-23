@@ -1,6 +1,5 @@
 (ns castorocauda.util
-  (:use [castorocauda.timeline :only [timeline tl-cons!]]
-        [goog.dom :only [getParentElement]]))
+  (:use [goog.dom :only [getParentElement]]))
 
 ;;;; This file isn't what castorocauda uses.
 ;;;; It is here for your convenience.
@@ -55,30 +54,3 @@
    Use js/setTimeout to wait for the clearance of call stack."
   [f & args]
   (js/setTimeout #(apply f args) 0))
-
-
-(defn dom-element-events
-  "A timeline of events occured at the element"
-  [event-name el]
-  (let [tl (timeline)]
-    (.addEventListener
-     el event-name
-     (fn [e] (tl-cons! e tl)))
-    tl))
-
-
-(defn dom-delegated-events
-  "delegated events can be captured by specifying a selector query or a fn"
-  ([event-name sel]
-     (dom-delegated-events event-name sel document/body))
-  ([event-name sel el]
-     (let [tl (timeline)]
-       (.addEventListener
-        el event-name
-        (fn [e]
-          (when
-              (if (string? sel)
-                (selector-match? (.-target e) sel)
-                (sel e))
-            (tl-cons! e tl))))
-       tl)))
