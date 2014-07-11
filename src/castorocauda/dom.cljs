@@ -55,7 +55,7 @@
            | `[:remove  path nil index]`
            | `[:swap    path hiccup nil]`
            | `[:nodeValue path String nil]`"
-  [deltas base-el]
+  [deltas base-el glow?]
   (let [sel-path-dom (memoize (partial select-path-dom base-el))
         get-children (memoize (fn [node] (->vec (.-childNodes node))))]
     (doseq [[typ path a b :as delta] deltas]
@@ -86,7 +86,7 @@
           (set! (.-nodeValue node) a))
 
         ;;glow affected node green for a while
-        (comment if (gdom/isElement node)
+        (if (and glow? (gdom/isElement node))
           (glow node)
           (some-> node .-parentNode glow))))))
 
@@ -95,8 +95,11 @@
   "base-el :: `HTMLElement`
    old-edn :: hiccup-style EDN representing DOM
    new-edn :: hiccup-style EDN representing DOM"
-  [old-edn new-edn base-el]
-  (propagate-dom-change
-   (html-delta old-edn new-edn [] 0)
-   base-el)
-  new-edn)
+  ([old-edn new-edn base-el]
+     (gendom old-edn new-edn base-el false))
+  ([old-edn new-edn base-el glow?]
+     (propagate-dom-change
+      (html-delta old-edn new-edn [] 0)
+      base-el
+      glow?)
+     new-edn))

@@ -48,7 +48,7 @@
   ;;extract tag name, id and classes from keyword
   (memoize
    (fn [tagname]
-     (let [[_ name _ id classes] (re-matches #"^([^.^#]+)(#([^.]+))?(\..+)?" (str tagname))
+     (let [[_ name _ id classes] (re-matches #"^([^.^#]+)(#([^.]+))?(\..+)?" (name tagname))
            attrs {}
            attrs (if classes
                    (assoc attrs :class (cstring/replace classes #"\." " "))
