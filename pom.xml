@@ -16,7 +16,7 @@
   <scm>
     <connection>scm:git:git://github.com/ympbyc/castorocauda.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/ympbyc/castorocauda.git</developerConnection>
-    <tag>d718ae14eb223310cd7b6db06a5c842169a08755
+    <tag>9b7d886eca0a09b2ff2964d9f4ff949393e67b3e
 </tag>
     <url>https://github.com/ympbyc/castorocauda</url>
   </scm>

@@ -1,5 +1,5 @@
 (ns castorocauda.util
-  (:require [goog.dom :ad gdom]))
+  (:require [goog.dom :as gdom]))
 
 ;;;; This file isn't what castorocauda uses.
 ;;;; It is here for your convenience.
