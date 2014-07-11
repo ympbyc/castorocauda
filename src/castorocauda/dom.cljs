@@ -86,9 +86,10 @@
           (set! (.-nodeValue node) a))
 
         ;;glow affected node green for a while
-        (if (and glow? (gdom/isElement node))
-          (glow node)
-          (some-> node .-parentNode glow))))))
+        (when glow?
+          (if (gdom/isElement node)
+            (glow node)
+            (some-> node .-parentNode glow)))))))
 
 
 (defn gendom
@@ -98,8 +99,7 @@
   ([old-edn new-edn base-el]
      (gendom old-edn new-edn base-el false))
   ([old-edn new-edn base-el glow?]
-     (propagate-dom-change
-      (html-delta old-edn new-edn [] 0)
-      base-el
-      glow?)
-     new-edn))
+     (let [delta (html-delta old-edn new-edn [] 0)]
+       (.info js/console (pr-str delta))
+       (propagate-dom-change delta base-el glow?)
+       new-edn)))
