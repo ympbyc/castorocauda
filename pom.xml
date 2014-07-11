@@ -1,13 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>castorocauda</groupId>
   <artifactId>castorocauda</artifactId>
   <packaging>jar</packaging>
-  <version>0.0.9</version>
+  <version>0.1.3-SNAPSHOT</version>
   <name>castorocauda</name>
-  <description>Castorocauda is a client side web development framework-ish library that can be mixed freely with other libraries - All castorocauda source included in this repository release under Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)</description>
-  <url>http://changeme.example.com</url>
+  <description>Castorocauda provides an abstraction layer on top of the DOM</description>
+  <url>https://github.com/ympbyc/castorocauda</url>
   <licenses>
     <license>
       <name>Eclipse Public License</name>
@@ -17,7 +16,8 @@
   <scm>
     <connection>scm:git:git://github.com/ympbyc/castorocauda.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/ympbyc/castorocauda.git</developerConnection>
-    <tag>b0e89a8e6a5315cb7aba637a370166129e8cc489</tag>
+    <tag>d718ae14eb223310cd7b6db06a5c842169a08755
+</tag>
     <url>https://github.com/ympbyc/castorocauda</url>
   </scm>
   <build>
@@ -38,6 +38,7 @@
     </testResources>
     <directory>target</directory>
     <outputDirectory>target/classes</outputDirectory>
+    <plugins/>
   </build>
   <repositories>
     <repository>
@@ -60,6 +61,16 @@
         <enabled>true</enabled>
       </releases>
     </repository>
+    <repository>
+      <id>sonatype-oss-public</id>
+      <url>https://oss.sonatype.org/content/groups/public/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
   </repositories>
   <dependencies>
     <dependency>
@@ -70,12 +81,36 @@
     <dependency>
       <groupId>hiccups</groupId>
       <artifactId>hiccups</artifactId>
-      <version>0.2.0</version>
+      <version>0.3.0</version>
     </dependency>
     <dependency>
       <groupId>prismatic</groupId>
       <artifactId>dommy</artifactId>
-      <version>0.1.1</version>
+      <version>0.1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.clojure</groupId>
+      <artifactId>tools.nrepl</artifactId>
+      <version>0.2.3</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.clojure</groupId>
+          <artifactId>clojure</artifactId>
+        </exclusion>
+      </exclusions>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>clojure-complete</groupId>
+      <artifactId>clojure-complete</artifactId>
+      <version>0.2.3</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.clojure</groupId>
+          <artifactId>clojure</artifactId>
+        </exclusion>
+      </exclusions>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
