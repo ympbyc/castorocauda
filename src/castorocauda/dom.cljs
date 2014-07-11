@@ -1,5 +1,5 @@
 (ns castorocauda.dom
-  (:require [castorocauda.html :refer [html-delta wrap-tags]]
+  (:require [castorocauda.html :refer [html-delta]]
             [dommy.core :as dommy_]
             [goog.dom :as gdom]
             [goog.fx.dom :as domfx]

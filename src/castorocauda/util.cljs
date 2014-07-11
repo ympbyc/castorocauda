@@ -1,5 +1,5 @@
 (ns castorocauda.util
-  (:use [goog.dom :only [getParentElement]]))
+  (:require [goog.dom :ad gdom]))
 
 ;;;; This file isn't what castorocauda uses.
 ;;;; It is here for your convenience.
@@ -39,7 +39,7 @@
 (defn selector-match?
   "Test if selector query matches the element"
   [el sel]
-  (some (partial = el) (q-select-all sel (getParentElement el))))
+  (some (partial = el) (q-select-all sel (gdom/getParentElement el))))
 
 
 (defn delayed-fn
