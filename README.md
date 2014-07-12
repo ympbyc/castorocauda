@@ -30,7 +30,7 @@ Add the following dependency to your project.clj file:
 
 ## Usage
 
-```
+```clojure
 (ns yourapp.core
     (:use [castorocauda.util :only [dom-ready q-select]]
           [castorocauda.dom  :only [gendom]]))
@@ -68,7 +68,8 @@ Renderers create a virtual DOM using application state.
 The virtual DOM gets passed to `gendom` along with a previous virtual DOM and a HTMLElement where we want the virtual DOM to be rendered.
 
 ```clojure
-(gendom (render-all {:message "hello"})
+(gendom (render-all {:message "iwana"})
+        (render-all {:message "ugui"})
         (q-select "#main"))
 ```
 
