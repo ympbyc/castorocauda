@@ -68,8 +68,6 @@ Renderers create a virtual DOM using application state.
 The virtual DOM gets passed to `gendom` along with a previous virtual DOM and a HTMLElement where we want the virtual DOM to be rendered.
 
 ```clojure
-(def dom (atom []))
-
 (gendom (render-all {:message "hello"})
         (q-select "#main"))
 ```
@@ -84,9 +82,11 @@ The virtual DOM gets passed to `gendom` along with a previous virtual DOM and a 
                       [:p "kujira"]]]
       delta     (html-delta old-v-dom new-v-dom [] 0)]
      delta)
-;; => ([:att       [0 1 0]   :href "/kurodai"]
-       [:nodeValue [0 1 0 0] "saba" nil]
-       [:append    [0 1]     [:p {} [:_TextNode {} "kujira"]] nil])
+
+;;=>
+([:att       [0 1 0]   :href "/kurodai"]
+ [:nodeValue [0 1 0 0] "saba" nil]
+ [:append    [0 1]     [:p {} [:_TextNode {} "kujira"]] nil])
 ```
 
 
