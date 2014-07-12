@@ -1,4 +1,4 @@
-# Castorocauda - DOM Abstraction * FRP
+# Castorocauda - DOM Abstraction
 
 ![logo](http://d3j5vwomefv46c.cloudfront.net/photos/large/795746565.jpg)
 
@@ -54,6 +54,39 @@ Add the following dependency to your project.clj file:
      (q-select "#text")
      "keyup"
      (fn [e] (update-note (.-value (.-target e)))))
+```
+
+## How it works
+
+Renderers create a virtual DOM using application state.
+
+```clojure
+(defn render-all [state]
+  [:p (:message state)])
+```
+
+The virtual DOM gets passed to `gendom` along with a previous virtual DOM and a HTMLElement where we want the virtual DOM to be rendered.
+
+```clojure
+(def dom (atom []))
+
+(gendom (render-all {:message "hello"})
+        (q-select "#main"))
+```
+
+`gendom` compares the new virtual DOM and the old one to calcurate deltas, applies deltas to the DOM.
+
+```clojure
+(let [old-v-dom [:div [:p "ayu"]
+                      [:div [:a {:href "/maguro"} "hamachi"]]]
+      new-v-dom [:div [:p "ayu"]
+                      [:div [:a {:href "/kurodai"} "saba"]
+                      [:p "kujira"]]]
+      delta     (html-delta old-v-dom new-v-dom [] 0)]
+     delta)
+;; => ([:att       [0 1 0]   :href "/kurodai"]
+       [:nodeValue [0 1 0 0] "saba" nil]
+       [:append    [0 1]     [:p {} [:_TextNode {} "kujira"]] nil])
 ```
 
 
